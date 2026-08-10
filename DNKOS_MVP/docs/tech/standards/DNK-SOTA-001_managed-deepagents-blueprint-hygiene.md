@@ -16,6 +16,22 @@ This reference documents the clean-room architectural blueprint standards, host 
 
 ---
 
+## Scope & Applicability
+
+This standard applies to:
+
+- Sandboxed agent runtimes running inside Docker containers.
+- Filesystem isolation and egress/network policies for tools executed by agents.
+- Cross-language filesystem contracts (Python + TypeScript) for DNK OS.
+
+This standard does NOT directly apply to:
+
+- Pure UI/front-end repositories without agent tool execution.
+- High-level orchestration frameworks (LangGraph, CrewAI) where sandboxing is handled differently.
+- Business logic unrelated to filesystem or network isolation.
+
+---
+
 ## 📌 1. Structural Blueprint & Spec Standards
 
 When assimilating closed-source or public-beta repositories via clean-room reproduction, adhere to the following 4-tier specification layout:
