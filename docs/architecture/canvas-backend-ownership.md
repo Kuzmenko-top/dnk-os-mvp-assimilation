@@ -75,3 +75,22 @@ FastAPI є **Core Orchestrator**:
 1. Поточні тимчасові маршрути Express `/api/v1/canvases/*` перетворюються на проксі-маршрути до відповідних FastAPI ендпоінтів `http://dnk-orchestrator:8000/api/v1/canvases/*`.
 2. Файлова локальна персистентність Express в `.od/dnk_canvases` залишається виключно як автономний резервний офлайн-режим (Standalone Fallback).
 3. Після повної інтеграції `dnk_orchestrator` локальний файловий режим в Express депрекується протягом 3 місяців, залишаючи Express суто в ролі ретранслятора.
+
+---
+
+## 3. Database Technology & Production Migration Status
+
+> [!IMPORTANT]
+> **DATABASE STATUS & POLICY GATES**:
+> 
+> 1. **SQLite is development/fixture-only**:
+>    The local SQLite database (`canvas_engine.db`) initialized and managed inside `canvas-persistence.ts` is strictly for development, testing, and fixture-only simulation workflows. It must never be deployed in any multi-user production environment.
+> 
+> 2. **PostgreSQL is the canonical production database**:
+>    The production persistent data store is PostgreSQL, managed and queried exclusively through the FastAPI `dnk_orchestrator` service using SQLAlchemy/SQLModel structures.
+> 
+> 3. **FastAPI owns canonical persistence API**:
+>    All permanent data modifications and element state persistence must eventually live on the FastAPI endpoints.
+> 
+> 4. **Production PostgreSQL migration: NOT DONE**:
+>    The automatic DB migration scripts (Alembic) to port the local Excalidraw element snapshots, design runs, and audit logs into PostgreSQL tables are **NOT DONE**. The local SQLite file store currently acts as the single active persistence engine for this local pre-release slice.
