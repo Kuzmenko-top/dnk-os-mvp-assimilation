@@ -3,7 +3,7 @@ set -e
 
 # Configuration
 EXPORT_DIR="/tmp/dnk-assimilation-export"
-REPO_URL="https://github.com/DNKShopify/dnk-os-mvp-assimilation.git"
+REPO_URL="https://github.com/Kuzmenko-top/dnk-os-mvp-assimilation.git"
 
 # Clean previous export
 rm -rf "$EXPORT_DIR"
