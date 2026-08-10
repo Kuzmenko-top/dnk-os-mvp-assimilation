@@ -1,35 +1,41 @@
 ---
-name: dnk-task-graph-manager
-description: Спеціалізована навичка агента-хронікера DNK OS для правильного розташування задач у Дереві, автоматичної генерації звітів виконаного циклу та збереження логіки виконання для покращення системи.
+name: "dnk-task-graph-manager"
+description: "DNK OS Task Graph Manager and Execution Cycle Auto-Reporter"
+version: "2.0.0"
+category: "general"
+assimilated_at: "2026-08-10"
 ---
 
-# 🤖 Навичка: DNK OS Task Graph Manager & Reporter Agent
+# 🌐 Task Graph & Reporting Assimilation Index
 
-Ця навичка регламентує автономну роботу агента-хронікера з організації Дерева Задач та авто-фіксації звітів виконання циклів.
+Meta-index tracking task node placements and execution cycle auto-reports.
 
----
+## 📁 Core Specifications
 
-## 📌 1. Правила Розташування Задач (Task Node Placement)
+1. **[Architecture Specification](../../docs/tech/specs/DNK-ARCH-004_task-graph-reporting.md)**
+   - Plant-scale taxonomy rules (Field -> Sector -> Tree -> Bush -> Flower) and automated Execution Cycle Reports.
 
-При находженні нової підзадачі агент точечно визначає її рівень:
-- `plant_scale: field` — Корінь проекту / фундаментальна мета.
-- `plant_scale: sector` — Напрямок / Сфера розробки (Core, UI, Ecom).
-- `plant_scale: tree` — Епічна задача тривалістю від 1 тижня.
-- `plant_scale: bush` — Задача фічі тривалістю 1-3 дні.
-- `plant_scale: flower` — Мікро-підзадача тривалістю 1-4 години.
+## 🧪 Quick Recipes (How to Use This Skill)
 
-Агент суворо зв'язує `parent_id` кожної ноди з відповідно вищим рівнем.
+### Recipe A: Taxonomical Node Placement
 
----
+**Goal:** Correctly register a new task node inside the local task forest database or markdown.
 
-## 📊 2. Авто-Генерація Звіту Виконаного Циклу (Execution Cycle Reporting)
+- Read node scale from `DNK-ARCH-004_task-graph-reporting.md`.
+- Determine correct `plant_scale` (e.g. `flower`) and associate with parent Bush:
+  ```json
+  {
+    "id": "Flower_05_Canvas_Sync",
+    "parent_id": "Bush_WebSockets_Canvas_Sync",
+    "plant_scale": "flower",
+    "status": "pending"
+  }
+  ```
 
-Кожного разу, коли 100% підзадач у `Feature Bush` або `Epic Tree` переходять у статус `completed`:
+### Recipe B: Generating Execution Cycle Reports
 
-1. Агент ініціює створення **Офіційного Звіту Циклу**:
-   - Файл: `docs/reports/execution_cycles/CYC_{cycle_id}_{name}_REPORT.md`
-2. Звіт повинен містити:
-   - **Завершені Ноди**: список усіх закритих квіточок та кущів.
-   - **Змінені Файли**: список модифікованих вихідних файлів.
-   - **Логіку Виконання (Execution Rationale)**: як саме було вирішено задачу та які архітектурні висновки зроблено.
-   - **Еволюційні Уроки (Lessons Learned)**: що слід зберегти у системній пам'яті для покращення наступних запусків **DNK OS**.
+**Goal:** Auto-generate and format a cycle report when all child flowers are completed.
+
+- Once 100% of flowers under a Bush are marked `completed`, write the report:
+  - Place in: `docs/reports/execution_cycles/`
+  - See `DNK-ARCH-004_task-graph-reporting.md` for mandatory sections.

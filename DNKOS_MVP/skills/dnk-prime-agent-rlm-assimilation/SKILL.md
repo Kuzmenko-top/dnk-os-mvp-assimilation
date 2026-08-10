@@ -1,111 +1,46 @@
 ---
-name: dnk-prime-agent-rlm-assimilation
-description: Навичка асиміляції та впровадження Recursive Language Model (RLM), Continual Harness та advanced Compaction з Prime Agent у DNK OS.
-category: devops
-version: 1.0.0
-last_updated: 2026-08-08
+name: "dnk-prime-agent-rlm-assimilation"
+description: "Recursive Language Model (RLM), Continual Harness, and Smart Compaction from Prime Agent"
+version: "2.0.0"
+category: "devops"
+assimilated_at: "2026-08-10"
 ---
 
-<!-- --- DNK-MRH-HEADER ---
-mrh_id: "DNKOS_MVP/skills/dnk-prime-agent-rlm-assimilation/SKILL.md"
-purpose: "Canonical file for dnk-prime-agent-rlm-assimilation SKILL.md"
-canonical_source: true
-alters_files: []
-triggers_tasks: []
-status: "Active"
-version: "1.0.0"
-updated_at: "2026-08-08"
---- END DNK-MRH-HEADER --- -->
+# 🌐 Prime Agent RLM & Harness Assimilation Index
 
-# 🧬 Навичка Герича: Prime Agent RLM & Harness Assimilation
+Meta-index tracking RLM, Continual Harness, and Context Compaction specs.
 
-Ця навичка визначає канонічний протокол для впровадження концепцій **Recursive Language Model (RLM)**, **Continual Harness** та **Context Compaction** (на основі архітектури Prime Agent) у субагентське середовище **DNK OS (DNKOS_MVP)**.
+## 📁 Core Specifications
 
----
+1. **[Architecture Specification](../../docs/tech/specs/DNK-ARCH-003_prime-agent-rlm.md)**
+   - Persistent IPython kernels, control-channel ZeroMQ, Continual Harness, and Smart Context Compaction.
 
-## 🛠️ 1. Ядро RLM (Recursive Language Model) у DNK OS
+## 🧪 Quick Recipes (How to Use This Skill)
 
-Ядро RLM перетворює взаємодію з ШІ на програмну операційну систему, де контекст є змінними, а субагенти — звичайними викликами функцій.
+### Recipe A: Asynchronous Subagent Spawning (Non-blocking)
 
-1. **Єдиний Інтерфейс Виконання (Persistent IPython Kernel)**:
-   - Субагенти використовують довгоіснуюче ядро IPython для виконання складних операцій.
-   - Замість виклику окремих інструментів для кожного кроку, агент пише Python-код, який виконує файлові операції, bash-команди, обчислення та аналітику.
-   
-2. **Асинхронне Неблокуюче Делегування (`rlm.run`)**:
-   - Агент запускає дочірніх субагентів за допомогою `await rlm("task_description", name="sub-reviewer")`.
-   - Виклик повертає `RLMSpawnHandle` (з ID субагента та його директорією сесії) **миттєво**, не блокуючи головний потік міркувань.
-   - Дочірній агент запускається у фоні як незалежний сесійний воркер.
+**Goal:** Spawn a sandboxed subagent asynchronously without blocking Gerych's main reasoning thread.
 
-3. **Комунікація через Контрольний Канал (Control-Channel Comms)**:
-   - Щоб запобігти взаємному блокуванню (deadlock) при виконанні послідовних шел-команд, відповіді на запити хоста ходять через **Control channel** Jupyter ZeroMQ протоколу.
-   - Асинхронні повідомлення між агентами надсилаються через поштові скриньки (`await agent_message.send(...)`).
+- Use the RLM spawn interface defined in `DNK-ARCH-003_prime-agent-rlm.md`:
+  ```python
+  # Async delegator
+  handle = await rlm.spawn("Scan for credentials", name="review-agent")
+  print("Spawned worker ID:", handle.session_id)
+  
+  # Await completion on-demand
+  result = await handle.wait()
+  ```
 
----
+### Recipe B: Safe Context Compaction Slicing
 
-## 📜 2. Концепція Continual Harness у DNK OS
+**Goal:** Cleanly compact history tokens without severing tool call connections.
 
-Базовий системний промпт є імутабельним (незмінним), але середовище накопичує живий досвід у **Continual Harness** (`harness_state.json`), локалізованому в директорії сесії.
-
-1. **Елементи Harness**:
-   - `prompt`: Додаткові інструкції та контекстні фокусування.
-   - `memory`: Виявлені факти, уподобання та конвенції.
-   - `skill`: Описи виконуваних Python-пакетів та їхніх сигнатур.
-   - `subagent`: Специфікації та реєстр дочірніх агентів.
-
-2. **Refinement Loop (`/refine`)**:
-   - Після завершення траєкторії запускається аналіз успіху/помилок.
-   - Маленькі, підтверджені доказами патчі вносяться в `harness_state.json`.
-   - Створюються версіоновані знімки (snapshots) для швидкого відкочування змін (rollback) у разі деградації якості відповідей.
-
----
-
-## 🧹 3. Протокол Розумної Компактизації (Smart Context Compaction)
-
-Коли обсяг токенів у розмові перевищує критичну межу, субагенти повинні стискати старі повідомлення за строгими правилами, зберігаючи кумулятивний контекст.
-
-1. **Правила Безпечного Розрізу (Cut Point Rules)**:
-   - Розріз контексту може відбуватися лише на межах повідомлень користувача (`User`), асистента (`Assistant`) або башу (`BashExecution`).
-   - **Ніколи не розрізати на результатах роботи інструментів** (`Tool result`). Результат роботи інструменту має залишатися зчепленим із його викликом.
-
-2. **Кумулятивний Трекінг Файлів (Cumulative File Tracking)**:
-   - Під час кожного стиснення контексту створюється структурована нотатка стиснення (`CompactionEntry`).
-   - Нотатка обов'язково накопичує та зберігає списки відвіданих (`read-files`) та змінених (`modified-files`) файлів за всю історію сесії.
-
-3. **Шаблон Структурованого Стиснення**:
-   ```markdown
-   ## Goal
-   [Якої мети намагається досягти користувач]
-
-   ## Constraints & Preferences
-   - [Вимоги та уподобання користувача]
-
-   ## Progress
-   ### Done
-   - [x] [Виконані підзадачі]
-   ### In Progress
-   - [ ] [Поточні завдання]
-
-   ## Key Decisions
-   - **[Рішення]**: [Обґрунтування]
-
-   ## Next Steps
-   1. [Наступні кроки для виконання]
-
-   ## Critical Context
-   - [Критичні дані для продовження]
-
-   <read-files>
-   path/to/inspected_file.py
-   </read-files>
-
-   <modified-files>
-   path/to/modified_file.py
-   </modified-files>
-   ```
-
----
-
-## ⚠️ Критичні Пастки та Workarounds
-
-- **deadlock на Shell-каналі**: Намагання зробити синхронний `await` субагента на Shell-каналі Jupyter веде до зависання ядра. Завжди реєструйте комунікаційні хендлери на Control-каналі та використовуйте асинхронні повідомлення.
-- **Втрата контексту при Compaction**: Якщо вирізати інструменти без їхніх результатів, LLM втратить логіку виконання і почне повторювати ті самі дії. Завжди дотримуйтесь `Cut Point Rules`.
+- Implement cutting points restricted strictly to user/assistant bounds per `DNK-ARCH-003_prime-agent-rlm.md`:
+  ```python
+  def find_safe_cut_index(messages):
+      # Traverse backward, find User/Assistant boundaries, avoid separating Tool and Tool Result!
+      for idx, msg in enumerate(reversed(messages)):
+          if msg.role in ["user", "assistant"] and not msg.is_tool_bound:
+              return len(messages) - idx
+      return 0
+  ```
