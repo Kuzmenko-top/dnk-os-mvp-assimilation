@@ -32,3 +32,4 @@ tags:
 ## 🌲 Активні завдання сектору (Active Tasks in Sector)
 - [x] **🌸 [FLOWER_15]** Перенесення та адаптація системи пам'яті Герича в ядро MVP ([[Flower_15_Gerych_Memory_System_Transplant]]) — 100%
 - [x] **🌸 [FLOWER_16]** Memory-Aware Worker Execution та ізоляція клієнтів ([[Flower_16_Memory_Aware_Worker_Execution]]) — 100%
+- [x] **🌸 [FLOWER_17]** Рекурсивний контур аналізу помилок Error Distillation Engine ([[Flower_17_Error_Distillation_Engine]]) — 100%

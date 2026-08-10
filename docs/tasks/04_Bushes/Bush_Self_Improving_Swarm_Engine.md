@@ -4,7 +4,7 @@ title: "🌿 Кущ Задач: Self-Improving Swarm Engine"
 type: feature_bush
 plant_scale: bush
 parent_id: tree_agentic_self_improving_swarm
-status: in_progress
+status: completed
 tags:
   - dnk-task-forest
   - dnk-feature-bush
@@ -28,8 +28,8 @@ tags:
 **ID**: `bush_self_improving_swarm_engine`  
 **Plant Scale**: `bush` (Рівень 4)  
 **Parent ID**: `tree_cognitive_agent_swarm_factory`  
-**Status**: `in_progress`  
-**Progress**: `85%`
+**Status**: `completed`  
+**Progress**: `100%`
 
 ---
 
@@ -38,7 +38,7 @@ tags:
 - [x] **🌱 [FLOWER]** Оновлення контуру пост-виконання рою в `swarm_assimilator.py` — 100%
 - [x] **🌱 [FLOWER_15]** Трансплантація та інтеграція системи пам'яті Герича ([[Flower_15_Gerych_Memory_System_Transplant]]) — 100%
 - [x] **🌱 [FLOWER_16]** Memory-Aware Worker Execution та ізоляція клієнтів ([[Flower_16_Memory_Aware_Worker_Execution]]) — 100%
-- [ ] **🌱 [FLOWER]** Реалізація Error Distillation Engine для автоматичного парсингу збоїв — 0%
+- [x] **🌱 [FLOWER_17]** Реалізація Error Distillation Engine та самолікування воркерів ([[Flower_17_Error_Distillation_Engine]]) — 100%
 - [ ] **🌱 [FLOWER]** Контур авто-оновлення знань та навичок (Self-Updating Skills) — 0%
 - [ ] **🌱 [FLOWER]** Dockerized TDD верифікація контуру — 0%
 

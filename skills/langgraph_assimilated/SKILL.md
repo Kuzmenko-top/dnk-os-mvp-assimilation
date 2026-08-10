@@ -21,6 +21,19 @@ Meta-index tracking stateful loops, checkpointing, and MCP-routing.
 4. **[Sandbox Execution Security](./references/DNK-SEC-005_langgraph-execution-sandbox.md)**
    - Safe isolated container routing, loop caps, and resource limits.
 
+## 📁 Structure
+
+- `scripts/` — скрипти для роботи з графами (створення, запуск, MCP).
+- `examples/` — приклади multi-agent флоу (research → plan → execute → review).
+- `references/` — приклади артефактів (графи, стейт-моделі, інтеграції).
+- `resources/` — додаткові матеріали, посилання, діаграми.
+
+Основна документація:
+- [RN-004](../../docs/reports/rd_assimilation/langgraph/RN-004_langgraph-research.md)
+- [DNK-ARCH-005](../../docs/tech/specs/DNK-ARCH-005_langgraph-multi-agent-orchestrator.md)
+- [DNK-COMP-005](../../docs/tech/specs/DNK-COMP-005_langgraph-state-contracts.md)
+- [DNK-SEC-005](../../docs/tech/standards/DNK-SEC-005_langgraph-execution-sandbox.md)
+
 ## 🧪 Quick Recipes
 
 ### Recipe A: Compiling and Running a Stateful Multi-Agent Loop
