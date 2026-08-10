@@ -109,3 +109,91 @@ We recommend **standardising all DNK OS skills** onto the **"Index + Recipes"** 
 ```
 
 This protocol ensures perfect context hygiene, zero billing overhead, and high execution speed for Gerych and all subagents.
+
+---
+
+## Scope & Applicability
+
+This SKILL standard applies to:
+
+- Assimilation of external open-source repositories (e.g., open-canvas, managed-deepagents, open_design, LangGraph, CrewAI).
+- Complex DNK OS modules where:
+  - We have RN / DNK-ARCH / DNK-COMP / DNK-SEC / SOTA specs.
+  - We want agents and developers to quickly locate and apply these specs in real code.
+
+This standard does NOT need to be used for:
+
+- Small internal utilities or one-off scripts.
+- Minor bugfixes or UI tweaks that do not introduce new architecture or contracts.
+- Simple configuration-only changes.
+
+---
+
+## Canonical SKILL Template: Index + Recipes
+
+Each SKILL.md MUST be a thin document (ideally <= 40–50 lines) with two main sections:
+
+1. **Index** – links into the canonical specs under `docs/` and `skills/`.
+2. **Recipes** – 1–2 short, concrete usage patterns that show how to apply the specs in DNK_OS_MVP.
+
+### 1. Index Section
+
+```markdown
+# <Repo / Module Name> Assimilation Index
+
+Meta-index for architecture, contracts, and security specs.
+
+## 📁 Core Specifications
+
+1. **[Research & Evidence Trail](../reports/rd_assimilation/<repo>/RN-XXX_<repo>-research.md)**
+   - Summary of abstractions, key files, and verification matrix.
+
+2. **[Architecture Specification](../tech/specs/DNK-ARCH-XXX_<topic>.md)**
+   - Data models, DB schemas, event bus, lifecycle.
+
+3. **[Component Interfaces & Contracts](../tech/specs/DNK-COMP-XXX_<topic>.md)**
+   - Type-safe interfaces (Python / TS), public APIs, error types.
+
+4. **[Security / Sandbox / Egress Standards](../tech/specs/DNK-SEC-XXX_<topic>.md)**
+   - Container topology, network policies, filesystem boundaries.
+
+5. **[SOTA Blueprint(s)](../tech/standards/DNK-SOTA-0XX_*.md)** (optional)
+   - When a repo defines a reusable SOTA standard (e.g., DNK-SOTA-001 for sandboxed agents).
+```
+
+> Note: Paths above are examples; actual relative paths MUST be adjusted per repo layout.
+
+### 2. Recipes Section
+
+```markdown
+## 🧪 Quick Recipes (How to Use This Skill)
+
+### Recipe A: Using <Component / Contract> in DNK_OS_MVP
+
+**Goal:** Integrate `<ComponentName>` from the assimilated repo into `visual_shell/web_ui` or `services/`.
+
+- Import the TS interface from DNK-COMP:
+  - See: `DNK-COMP-XXX_<topic>.md` for `interface <Name>`.
+- Implement a thin wrapper in DNK_OS_MVP:
+  - Place in: `services/<module>/` or `visual_shell/web_ui/components/`.
+- Wire it into DNK OS event flow:
+  - Follow the event bus spec in `DNK-ARCH-XXX_<topic>.md`.
+
+### Recipe B: Applying Sandbox / Egress Policy
+
+**Goal:** Run a DNK subagent with safe egress and filesystem isolation.
+
+- Use `DNK-SEC-XXX_<topic>.md` for:
+  - Docker Compose snippets,
+  - Calico/iptables rules,
+  - Volume masking configuration.
+- Implement the Python/TS contracts from `DNK-COMP-XXX_<topic>.md`:
+  - `DNKIsolatedFileSystem`,
+  - `PathTraversalError`, `ExecutionTimeoutError`.
+```
+
+Agents MUST keep Recipes:
+
+- Short and strictly practical (copy-paste friendly).
+- Referencing canonical specs instead of duplicating them.
+- Focused on **DNK_OS_MVP integration scenarios**, not generic theory.
