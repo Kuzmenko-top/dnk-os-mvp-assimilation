@@ -13,11 +13,13 @@
 
 ### [Screen ID: screen_001]
 * **Файл:** `assets/screenshots/001-crewai-dashboard.png`
+* **Статус доказу:** **pending_evidence** (Очікує завантаження)
 * **Опис доказу (evidence):** Головна веб-панель керування "Crews" (агентськими групами). Відображає активні процеси виконання, загальний час роботи та кількість задіяних субагентів у реальному часі.
 * **Джерело / URL:** https://crewai.com/enterprise/dashboard
 
 ### [Screen ID: screen_002]
 * **Файл:** `assets/screenshots/002-crewai-approval-gate.png`
+* **Статус доказу:** **pending_evidence** (Очікує завантаження)
 * **Опис доказу (evidence):** Візуальний інтерфейс очікування підтвердження від користувача (Human-in-the-Loop). Процес призупиняє роботу, доки користувач не введе текстовий фідбек або не натисне кнопку "Approve".
 * **Джерело / URL:** https://docs.crewai.com/how-to/Human-In-The-Loop
 

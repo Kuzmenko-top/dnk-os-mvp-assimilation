@@ -25,9 +25,9 @@ status: "Approved"
 
 ## 🛡️ Zero-Regression Gate (Обов'язковий бар'єр)
 1. **Концепція Прототипу (Prototype Specification):**
-   * Створити легкий логер в `core/utils/timeline_logger.py`, який записує події виконання від різних субагентів у спільну таблицю SQLite `agent_timeline` з полями `timestamp`, `agent_name`, `action`, `status`.
+   * Створити легкий логер в `core/utils/timeline_logger.py`, який записує події виконання від різних субагентів у спільну таблицю PostgreSQL `agent_timeline` з полями `run_id`, `agent_id`, `event_type`, `status`, `timestamp`.
 2. **Сценарій Тестування (Test Scenario):**
-   * Запустити два субагенти паралельно через `delegate_task` і перевірити, що в базі даних SQLite події записані хронологічно без блокувань та втрати даних.
+   * Запустити два субагенти паралельно через `delegate_task` і перевірити, що в базі даних події записані хронологічно без блокувань та втрати даних.
 3. **Обґрунтування Цінності (Value Justification / ROI):**
    * Скорочує час розробника на відлагодження паралельних процесів на 40% та дає 100% розуміння стану системи в будь-який момент часу.
 
@@ -36,10 +36,10 @@ status: "Approved"
 ## 🌸 Трансляція у Flower (Тільки після затвердження "Adopt" або "Adapt")
 * **Посилання на Flower Task:** `docs/tasks/Sector_03_UI/Tree_01_Timeline/Bush_01_Logger/Flower_01_implement_timeline_db.md`
 * **Критерії Приймання (Acceptance Criteria):**
-  - [ ] Реалізовано SQLite таблицю `agent_timeline`.
+  - [ ] Реалізовано PostgreSQL-схему та міграцію для таблиці `agent_timeline`.
   - [ ] Створено клас `TimelineLogger` з методами `log_action_start` та `log_action_end`.
   - [ ] Записи мають чіткі позначки часу з точністю до мілісекунд.
 * **Ризики (Risks & Mitigations):**
-  - Блокування SQLite при одночасному записі з кількох процесів ➔ Використовувати WAL-режим (Write-Ahead Logging) для SQLite.
+  - Блокування при великій кількості паралельних записів ➔ Створити індекси на `run_id`, `agent_id` та `timestamp`.
 * **Метод Перевірки (Verification Method):**
   - Запуск інтеграційного тесту `pytest tests/test_timeline_concurrency.py`.
