@@ -1,73 +1,62 @@
 # --- DNK-MRH-HEADER ---
-# mrh_id: "LAST_EXECUTION_REPORT.md"
-# purpose: "Comprehensive Technical Report on Open Design Gate 2.1 — Build, Runtime and Test Classification."
-# canonical_source: true
-# status: "Active"
-# version: "5.0.0"
-# updated_at: "2026-08-10"
-# author: "Gerych"
+# mrh_id: "DNKOS_MVP/docs/reports/LAST_EXECUTION_REPORT.md"
+# purpose: "Technical Execution Report on SOTA LangGraph & crewAI Assimilation"
+# author: "Maxim"
 # license: "MIT"
+# canonical_source: true
+# alters_files: []
+# triggers_tasks: []
+# status: "Active"
+# version: "1.2.0"
+# updated_at: "2026-08-10"
 # --- END DNK-MRH-HEADER ---
 
-# Technical Report: Open Design Gate 2.1 — Build, Runtime & Test Classification
+# 📊 Technical Execution Report: SOTA LangGraph & crewAI Multi-Agent Assimilation
 
-This report summarizes the technical advancements of **Gate 2.1**, closing the gap between the fixture runtime and the canonical production architecture without adding redundant UI features.
+## 1. Overview
+The `langchain-ai` and `crewAIInc` organizations were researched to identify, analyze, and assimilate critical repositories for the DNK OS Core. The key systems selected for integration are:
+- `langgraph` (stateful multi-agent orchestrator with loops).
+- `langchain-mcp-adapters` (bridging LangChain with Model Context Protocol).
+- `crewAI` (role-based sequential and hierarchical orchestration).
 
----
+## 2. Completed Artifacts (inside DNKOS_MVP/)
+The assimilation processes followed the **SOTA R&D Assimilation Protocol** and **Blueprint v1.1** guidelines:
 
-## 1. Executive Summary
-All requirements of **Gate 2.1** are fully completed. We successfully executed and verified the production web build, compiled the backend with ES Modules (ESM) absolute compliance, isolated Redis communication behind a formal `RedisEventBus` adapter, and separated the monolithic database-and-worker logic of `canvas-persistence.ts` into structured repositories, workers, and domain services. Additionally, we have classified all active tests and officially designated SQLite as dev/fixture-only.
+### A. crewAI Assimilation Artifacts (`DNK-ASSIM-011`):
+1. **Research & Evidence Trail (`RN-006`):**
+   - Created `docs/reports/rd_assimilation/crewai/RN-006_crewai-research.md`.
+   - Outlined role-playing personas (role, goal, backstory), task context flows, processes (sequential vs hierarchical), comparison with LangGraph, and repository statistics.
+2. **Architecture Specification (`DNK-ARCH-006`):**
+   - Created `docs/tech/specs/DNK-ARCH-006_crewai-multi-agent-patterns.md`.
+   - Defined role-based prompting compilation, sequential pipelining (Crew unit of work), and hybrid orchestration (LangGraph as Master, Crews as Leaf execution teams).
+3. **Component Interfaces & Contracts (`DNK-COMP-006`):**
+   - Created `docs/tech/specs/DNK-COMP-006_crewai-interfaces.md`.
+   - Declared pure abstract Python ports (`DNKCrewAgentPort`, `DNKCrewTaskPort`, `DNKCrewOrchestratorPort`) using `abc.ABC` and `@abstractmethod` with `...` placeholders (Blueprint v1.1 Rule 3).
+4. **Security & Sandbox Standards (`DNK-SEC-006`):**
+   - Created `docs/tech/standards/DNK-SEC-006_crewai-execution-sandbox.md`.
+   - Specified subagent sandbox boundaries, maximum concurrent agents (5), maximum task depth (10 steps), and RAM limits (512MB).
+5. **Unified Skill Folder Structure (`crewai_assimilated`):**
+   - Added standard folders: `scripts/`, `examples/`, `references/`, `resources/` under `skills/crewai_assimilated/`.
+   - Created `.gitkeep` and `README.md` files in each folder.
+   - Created thin skill index `skills/crewai_assimilated/SKILL.md` (50 lines, Index + Structure + Recipes).
+   - Created physical forwarder specifications in `skills/crewai_assimilated/references/` pointing to the main markdown specs.
+6. **Task Forest Update:**
+   - Created `docs/tasks/05_Flowers/Flower_CrewAI_Assimilation.md`.
+7. **Python Port & Adapter Implementation:**
+   - Coded `core/adapters/dnk_crewai_adapter.py` providing concrete implementations of `DNKCrewAgent`, `DNKCrewTask`, and `DNKCrewOrchestrator` (with sequential pipelined execution).
+8. **Verification Unit Test Suite:**
+   - Coded `tests/verification/test_crewai_adapter.py` with 3 comprehensive tests verifying persona boundaries, task execution, and sequential pipelining.
+   - Ran `PYTHONPATH` corrected tests with `uv run pytest` achieving 100% success (3 passed).
 
----
+### B. Path Hygiene & Verification:
+- Dynamicized `scripts/export-assimilation.sh` directory references.
+- Fixed absolute paths in `core/tests/test_error_distillation.py`.
+- Running `PYTHONPATH=. pytest tests/verification/test_path_hygiene.py` returns **100% SUCCESS**.
+- Executed `./scripts/export-assimilation.sh` syncing all newly created crewAI specifications and skills to `dnk-os-mvp-assimilation`.
 
-## 2. Completed Milestones
-
-### 1. Production Build & Verification Log
-- Executed Next.js production compilation successfully: `✓ Compiled successfully in 38.2s`.
-- Saved complete build diagnostics in `docs/reports/build-verification.md`.
-- Confirmed that the frontend does NOT attempt to establish connection with Redis or daemon databases during the static bundle build phase.
-
-### 2. Isolation of the Redis Event Bus Adapter
-- Created `apps/daemon/src/events/redis-event-bus.ts` to manage Redis events over RESP without exposing raw TCP socket blocks inside the business services.
-- Exposes clean methods: `connect()`, `publish(topic, payload)`, `subscribe(topic, handler)`, `healthcheck()`, and `disconnect()`.
-
-### 3. Separation of Repositories & Workers (Domain Splitting)
-To conform with single-responsibility designs, the monolithic database code inside `canvas-persistence.ts` has been refactored into:
-- **`src/repositories/canvas-repository.ts`** — database operations for canvases and snapshots.
-- **`src/repositories/design-run-repository.ts`** — database operations for runs, artifacts, and audits.
-- **`src/services/design-run-service.ts`** — business service directing run creation, audits, and transitions.
-- **`src/workers/design-run-worker.ts`** — base design-run execution interface.
-- **`src/workers/fixture-design-worker.ts`** — concrete worker executing Excalidraw element compilations and canvas snapshot creation on completion.
-
-The controller route `canvas-persistence.ts` is now a lean routing controller focusing purely on HTTP ingress.
-
-### 4. Database Policy & Migration Status
-Appended a clear status section inside `docs/architecture/canvas-backend-ownership.md` stating:
-- SQLite is strictly for development and testing.
-- PostgreSQL is the production database owned by FastAPI.
-- **Production PostgreSQL migration: NOT DONE**.
-
----
-
-## 3. Test Classification Matrix
-
-| Test file | Runner | Real browser | Real API | Real DB | Real Redis | Classification |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **`stitch-shell.test.tsx`** | Vitest | No | No | No | No | Component Test |
-| **`canvas-gate.test.tsx`** | Vitest | Verify (jsdom) | Verify (Mock Fetch) | Verify (SQLite IO) | Verify (RESP mock) | Integration/E2E Test |
-
-*Note: Combined test execution is verified green with 25 out of 25 passing tests inside the Docker container.*
-
----
-
-## 4. Combined Execution Logs
-```bash
-> @open-design/web@0.18.1 test /app/apps/web
-> vitest run -c vitest.config.ts
-
- ✓ tests/stitch-shell.test.tsx (10 tests) 113ms
- ✓ tests/canvas-gate.test.tsx (15 tests) 34ms
-
- Test Files  2 passed (2)
-      Tests  25 passed (25)
-```
+## 3. Verification Metrics
+- **Tests Collected & Passed (LangGraph Adapter):** 6 / 6
+- **Tests Collected & Passed (crewAI Adapter):** 3 / 3
+- **Tests Collected & Passed (Path Hygiene):** 1 / 1
+- **Path Hygiene Scan:** Verified cleanly, zero absolute host pathway violations.
+- **Export Status:** Sync successful, main branch of mentor-audit up to date.
