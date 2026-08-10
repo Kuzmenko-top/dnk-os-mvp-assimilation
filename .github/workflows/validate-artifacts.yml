@@ -1,0 +1,25 @@
+name: Validate Artifacts
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Check artifact structure
+        run: |
+          echo "=== Checking required directories ==="
+          test -d DNKOS_MVP/docs/reports/rd_assimilation || exit 1
+          test -d DNKOS_MVP/docs/tech/specs || exit 1
+          test -d DNKOS_MVP/skills || exit 1
+          
+          echo "=== Checking Markdown files ==="
+          find DNKOS_MVP -name "*.md" -type f | wc -l
+          
+          echo "=== Artifact structure OK ==="

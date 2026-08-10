@@ -1,0 +1,24 @@
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Ignore all files under DNKOS_MVP
+DNKOS_MVP/**/*
+
+# Do not ignore directories, allowing git to traverse them
+!DNKOS_MVP/**/
+
+# Allow only Markdown files
+!DNKOS_MVP/**/*.md
+
+# Allow only specific files
+!README.md
+!.gitignore
+!.github/workflows/validate-artifacts.yml
+!scripts/export-assimilation.sh
