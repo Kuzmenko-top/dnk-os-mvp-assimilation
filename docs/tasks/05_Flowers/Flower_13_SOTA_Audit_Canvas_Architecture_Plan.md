@@ -8,6 +8,7 @@
 # version: "1.0.0"
 # updated_at: "2026-08-10"
 # plant_scale: "flower"
+# author: "DNK-e.com Maksym"
 # --- END DNK-MRH-HEADER ---
 
 # 🌸 Квітка: Flower_13: Архітектурний план та порівняльний аналіз SOTA-рішень для сервісу аудиту

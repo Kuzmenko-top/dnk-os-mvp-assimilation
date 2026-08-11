@@ -1,7 +1,7 @@
 # --- DNK-MRH-HEADER ---
 # mrh_id: "DNKOS_MVP/docs/tech/specs/DNK-ARCH-005_langgraph-multi-agent-orchestrator.md"
 # purpose: "Architecture Specification for the LangGraph-style Stateful Multi-Agent Orchestrator"
-# author: "Maxim"
+# author: "DNK-e.com Maksym"
 # license: "MIT"
 # canonical_source: true
 # alters_files: []

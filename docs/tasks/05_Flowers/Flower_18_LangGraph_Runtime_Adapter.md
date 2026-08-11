@@ -14,7 +14,7 @@ tags:
 # --- DNK-MRH-HEADER ---
 # mrh_id: "DNKOS_MVP/docs/tasks/05_Flowers/Flower_18_LangGraph_Runtime_Adapter.md"
 # purpose: "Task Flower tracking LangGraph adapter, checkpointers and self-healing loop implementation"
-# author: "Maxim"
+# author: "DNK-e.com Maksym"
 # license: "MIT"
 # canonical_source: true
 # alters_files: []

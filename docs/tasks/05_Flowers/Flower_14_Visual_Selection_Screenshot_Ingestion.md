@@ -14,7 +14,7 @@ tags:
 # --- DNK-MRH-HEADER ---
 # mrh_id: "DNKOS_MVP/docs/tasks/05_Flowers/Flower_14_Visual_Selection_Screenshot_Ingestion.md"
 # purpose: "Task Flower tracking Visual Selection Context Bridge (VSCB) implementation and complete verification."
-# author: "Maxim"
+# author: "DNK-e.com Maksym"
 # license: "MIT"
 # canonical_source: true
 # alters_files: []

@@ -3,7 +3,7 @@
 ## 📋 Метадані
 ---
 mrh_id: "docs/research/competitors/insights/INSIGHT_001_timeline.md"
-author: "Maxim"
+author: "DNK-e.com Maksym"
 license: "DNK-INTERNAL"
 source_type: "competitor_observation"
 source_reference: "crewai/001-crewai-dashboard.png"

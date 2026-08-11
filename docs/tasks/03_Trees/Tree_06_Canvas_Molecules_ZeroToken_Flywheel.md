@@ -8,6 +8,7 @@
 # version: "1.0.0"
 # updated_at: "2026-08-09"
 # plant_scale: "tree"
+# author: "DNK-e.com Maksym"
 # --- END DNK-MRH-HEADER ---
 
 # 🌳 Дерево Задачі 06: Canvas Molecules & Zero-Token Self-Improving Flywheel

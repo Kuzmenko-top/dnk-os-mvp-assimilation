@@ -6,7 +6,7 @@ canonical_source: true
 status: "Active"
 version: "1.1.0"
 updated_at: "2026-08-10"
-author: "Maxim"
+author: "DNK-e.com Maksym"
 license: "MIT"
 ---
 

@@ -14,7 +14,7 @@ tags:
 # --- DNK-MRH-HEADER ---
 # mrh_id: "DNKOS_MVP/docs/tasks/05_Flowers/Flower_16_Memory_Aware_Worker_Execution.md"
 # purpose: "Task Flower tracking Memory-Aware Worker Execution and Tenant/Workspace Isolation implementation"
-# author: "Maxim"
+# author: "DNK-e.com Maksym"
 # license: "MIT"
 # canonical_source: true
 # alters_files: []

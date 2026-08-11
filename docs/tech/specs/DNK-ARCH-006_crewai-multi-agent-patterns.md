@@ -1,7 +1,7 @@
 # --- DNK-MRH-HEADER ---
 # mrh_id: "DNKOS_MVP/docs/tech/specs/DNK-ARCH-006_crewai-multi-agent-patterns.md"
 # purpose: "Architecture Specification for crewAI-style Role-Based Multi-Agent Workflows"
-# author: "Maxim"
+# author: "DNK-e.com Maksym"
 # license: "MIT"
 # canonical_source: true
 # alters_files: []

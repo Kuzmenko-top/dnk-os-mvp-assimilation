@@ -3,7 +3,7 @@
 ## 📋 Метадані
 ---
 mrh_id: "docs/research/competitors/insights/INSIGHT_002_approval_gate.md"
-author: "Maxim"
+author: "DNK-e.com Maksym"
 license: "DNK-INTERNAL"
 source_type: "competitor_observation"
 source_reference: "crewai/002-crewai-approval-gate.png"

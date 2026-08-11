@@ -8,6 +8,7 @@
 # version: "1.0.0"
 # updated_at: "2026-08-09"
 # plant_scale: "bush"
+# author: "DNK-e.com Maksym"
 # --- END DNK-MRH-HEADER ---
 
 # 🌿 Кущ: Langfuse Observability & Tracing Stack

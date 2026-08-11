@@ -1,7 +1,7 @@
 # --- DNK-MRH-HEADER ---
 # mrh_id: "DNKOS_MVP/docs/reports/rd_assimilation/crewai/RN-006_crewai-research.md"
 # purpose: "SOTA Research and Evidence Trail for crewAI"
-# author: "Maxim"
+# author: "DNK-e.com Maksym"
 # license: "MIT"
 # canonical_source: true
 # alters_files: []

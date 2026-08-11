@@ -1,7 +1,7 @@
 # --- DNK-MRH-HEADER ---
 # mrh_id: "DNKOS_MVP/docs/tech/specs/DNK-COMP-006_crewai-interfaces.md"
 # purpose: "Component Interfaces and Ports for crewAI-style multi-agent orchestration"
-# author: "Maxim"
+# author: "DNK-e.com Maksym"
 # license: "MIT"
 # canonical_source: true
 # alters_files: []

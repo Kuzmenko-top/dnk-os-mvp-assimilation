@@ -20,7 +20,7 @@ tags:
 # triggers_tasks: []
 # status: "Active"
 # version: "1.0.0"
-# updated_at: "2026-08-09"
+# updated_at: "2026-08-11"
 # plant_scale: "sector"
 # --- END DNK-MRH-HEADER ---
 
@@ -34,6 +34,8 @@ tags:
 - [x] **🌸 [FLOWER_16]** Memory-Aware Worker Execution та ізоляція клієнтів ([[Flower_16_Memory_Aware_Worker_Execution]]) — 100%
 - [x] **🌸 [FLOWER_17]** Рекурсивний контур аналізу помилок Error Distillation Engine ([[Flower_17_Error_Distillation_Engine]]) — 100%
 - [x] **🌸 [FLOWER_18]** Стейтфул-граф рантайм адаптер LangGraph та чекпоінтери ([[Flower_18_LangGraph_Runtime_Adapter]]) — 100%
+- [x] **🌸 [FLOWER_19]** Двосторонній рантайм-міст Infinite Canvas ↔ LangGraph Bridge ([[Flower_19_Infinite_Canvas_LangGraph_Runtime_Bridge]]) — 100%
+- [x] **🌸 [FLOWER_20]** Canvas Runtime Transport & Frontend Event Client ([[Flower_20_Canvas_Runtime_Transport_and_Frontend_Event_Client]]) — 100%
 
 
 ## 🌲 Епічні Дерева Сектору (Epic Trees in Sector)

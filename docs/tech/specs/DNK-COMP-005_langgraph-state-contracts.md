@@ -1,7 +1,7 @@
 # --- DNK-MRH-HEADER ---
 # mrh_id: "DNKOS_MVP/docs/tech/specs/DNK-COMP-005_langgraph-state-contracts.md"
 # purpose: "Component Interfaces and State Contracts for LangGraph and MCP Adapters"
-# author: "Maxim"
+# author: "DNK-e.com Maksym"
 # license: "MIT"
 # canonical_source: true
 # alters_files: []

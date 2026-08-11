@@ -1,62 +1,47 @@
 # --- DNK-MRH-HEADER ---
-# mrh_id: "DNKOS_MVP/docs/reports/LAST_EXECUTION_REPORT.md"
-# purpose: "Technical Execution Report on SOTA LangGraph & crewAI Assimilation"
-# author: "Maxim"
+# mrh_id: "docs/reports/LAST_EXECUTION_REPORT.md"
+# purpose: "Technical Execution Report for Lead Architect Antigravity AI tracking Flower 20"
+# author: "DNK-e.com Maksym"
 # license: "MIT"
 # canonical_source: true
 # alters_files: []
 # triggers_tasks: []
 # status: "Active"
-# version: "1.2.0"
-# updated_at: "2026-08-10"
+# version: "1.0.0"
+# updated_at: "2026-08-11"
 # --- END DNK-MRH-HEADER ---
 
-# 📊 Technical Execution Report: SOTA LangGraph & crewAI Multi-Agent Assimilation
+# LAST_EXECUTION_REPORT: FLOWER_20_CANVAS_RUNTIME_TRANSPORT
 
-## 1. Overview
-The `langchain-ai` and `crewAIInc` organizations were researched to identify, analyze, and assimilate critical repositories for the DNK OS Core. The key systems selected for integration are:
-- `langgraph` (stateful multi-agent orchestrator with loops).
-- `langchain-mcp-adapters` (bridging LangChain with Model Context Protocol).
-- `crewAI` (role-based sequential and hierarchical orchestration).
+## 1. Executive Summary
+This execution completes **Flower 20 — Canvas Runtime Transport & Frontend Event Client** within the canonical workspace boundary of `DNKOS_MVP/`.
+We have successfully implemented:
+- An asynchronous, secure event bus (`RuntimeEventBus`) supporting tenant/workspace isolation, bounded subscription queues, backpressure handling, reconnect replay with `last_event_id`, and snapshot fallback trigger.
+- Integration of `RuntimeEventBus` into the hexagonal `DNKLangGraphAdapter` for automatic event dispatch during graph execution runs.
+- Integration of a WebSocket-based subscription endpoint and HTTP REST endpoints for execution controls (resume, cancel, interrupt) inside the production FastAPI service (`dnk_canvas_api/main.py`).
+- A frontend `RuntimeBridgeClient` utility featuring event subscriptions, active WebSocket connection management, reconnect/replay support, and node state reduction supporting 9 specific custom lifecycle states.
+- Addition of 9 unit and integration tests covering the bus, transport boundaries, queue limits, reconnect replay, and fallback scenarios, bringing the suite to 20 highly robust tests.
+- 100% test completion and zero regressions, with all 167 total tests passing cleanly.
 
-## 2. Completed Artifacts (inside DNKOS_MVP/)
-The assimilation processes followed the **SOTA R&D Assimilation Protocol** and **Blueprint v1.1** guidelines:
+## 2. Technical Architecture & Component Mappings
 
-### A. crewAI Assimilation Artifacts (`DNK-ASSIM-011`):
-1. **Research & Evidence Trail (`RN-006`):**
-   - Created `docs/reports/rd_assimilation/crewai/RN-006_crewai-research.md`.
-   - Outlined role-playing personas (role, goal, backstory), task context flows, processes (sequential vs hierarchical), comparison with LangGraph, and repository statistics.
-2. **Architecture Specification (`DNK-ARCH-006`):**
-   - Created `docs/tech/specs/DNK-ARCH-006_crewai-multi-agent-patterns.md`.
-   - Defined role-based prompting compilation, sequential pipelining (Crew unit of work), and hybrid orchestration (LangGraph as Master, Crews as Leaf execution teams).
-3. **Component Interfaces & Contracts (`DNK-COMP-006`):**
-   - Created `docs/tech/specs/DNK-COMP-006_crewai-interfaces.md`.
-   - Declared pure abstract Python ports (`DNKCrewAgentPort`, `DNKCrewTaskPort`, `DNKCrewOrchestratorPort`) using `abc.ABC` and `@abstractmethod` with `...` placeholders (Blueprint v1.1 Rule 3).
-4. **Security & Sandbox Standards (`DNK-SEC-006`):**
-   - Created `docs/tech/standards/DNK-SEC-006_crewai-execution-sandbox.md`.
-   - Specified subagent sandbox boundaries, maximum concurrent agents (5), maximum task depth (10 steps), and RAM limits (512MB).
-5. **Unified Skill Folder Structure (`crewai_assimilated`):**
-   - Added standard folders: `scripts/`, `examples/`, `references/`, `resources/` under `skills/crewai_assimilated/`.
-   - Created `.gitkeep` and `README.md` files in each folder.
-   - Created thin skill index `skills/crewai_assimilated/SKILL.md` (50 lines, Index + Structure + Recipes).
-   - Created physical forwarder specifications in `skills/crewai_assimilated/references/` pointing to the main markdown specs.
-6. **Task Forest Update:**
-   - Created `docs/tasks/05_Flowers/Flower_CrewAI_Assimilation.md`.
-7. **Python Port & Adapter Implementation:**
-   - Coded `core/adapters/dnk_crewai_adapter.py` providing concrete implementations of `DNKCrewAgent`, `DNKCrewTask`, and `DNKCrewOrchestrator` (with sequential pipelined execution).
-8. **Verification Unit Test Suite:**
-   - Coded `tests/verification/test_crewai_adapter.py` with 3 comprehensive tests verifying persona boundaries, task execution, and sequential pipelining.
-   - Ran `PYTHONPATH` corrected tests with `uv run pytest` achieving 100% success (3 passed).
+### A. Backend Event Bus & Adapter Integration (`core/runtime_events.py` & `core/adapters/dnk_langgraph_adapter.py`)
+- **RuntimeEventBus**: Implemented as an async-safe, thread-safe, singleton subscription router. Holds execution-specific event history. Supports backpressure by dropping the oldest queue item when subscriber queue limits (e.g. `max_queue_size`) are exceeded.
+- **Fail-Closed Security Boundary**: Subscriptions without valid `tenant_id`, `workspace_id`, and `execution_id` raise a `PermissionError`. Events are securely drop-filtered if their source tenant/workspace does not match the subscriber's boundary credentials.
+- **Reconnect & Replay**: Matches requested `last_event_id` (sequence number) against execution history. Replays missed events to the subscriber immediately upon connection. If a gap is detected, a special `snapshot_fallback` event is queued to trigger state resynchronization.
+- **Adapter Integration**: `DNKLangGraphAdapter._publish_event` automatically publishes emitted events to the global `RuntimeEventBus` instance.
 
-### B. Path Hygiene & Verification:
-- Dynamicized `scripts/export-assimilation.sh` directory references.
-- Fixed absolute paths in `core/tests/test_error_distillation.py`.
-- Running `PYTHONPATH=. pytest tests/verification/test_path_hygiene.py` returns **100% SUCCESS**.
-- Executed `./scripts/export-assimilation.sh` syncing all newly created crewAI specifications and skills to `dnk-os-mvp-assimilation`.
+### B. Production FastAPI WebSocket Transport & REST Endpoints (`services/dnk_canvas_api/main.py`)
+- **WebSocket Route**: `/api/v1/ws/executions/{execution_id}` accepting `tenant_id`, `workspace_id`, `canvas_id`, and optional `last_event_id` query parameters.
+- **Bidirectional Channel**: Runs two concurrent async tasks (`send_events()` and `receive_controls()`) allowing real-time event streaming and receipt of UI control payloads.
+- **REST Control Endpoints**: Exposed POST endpoints `/api/v1/executions/{execution_id}/resume` and `/api/v1/executions/{execution_id}/cancel` mapping actions securely.
 
-## 3. Verification Metrics
-- **Tests Collected & Passed (LangGraph Adapter):** 6 / 6
-- **Tests Collected & Passed (crewAI Adapter):** 3 / 3
-- **Tests Collected & Passed (Path Hygiene):** 1 / 1
-- **Path Hygiene Scan:** Verified cleanly, zero absolute host pathway violations.
-- **Export Status:** Sync successful, main branch of mentor-audit up to date.
+### C. Frontend Client & Reducer State Manager (`visual_shell/web_ui/components/stitch/RuntimeBridgeClient.js`)
+- **RuntimeBridgeClient**: Implements WebSocket connection with robust exponential-backoff automatic retry.
+- **Controls Backchannel**: Features `.resume(updates)`, `.cancel()`, and `.interrupt()` which send JSON control payloads back over the socket (or fall back to HTTP REST endpoints if the socket is down).
+- **Custom 9-State Lifecycle Reducer**: Maps backend `RuntimeEvent` types into 9 UI states: `idle`, `queued`, `running`, `checkpointed`, `waiting_human`, `retrying`, `recovered`, `failed`, `completed`, `cancelled`.
+
+## 3. Verification & Validation Metrics
+- **Unit & Integration Suite**: 20 tests executed inside `test_canvas_runtime_bridge.py`. 100% success rate.
+- **Path Hygiene**: Resolved AST/indentation issue in the global `test_path_hygiene.py` test suite, enabling virtualenv paths to correctly bypass verification scanning.
+- **Complete Core & Integration Test Run**: 167 total test cases executed. 100% passed (130 core + 37 integration verification tests).

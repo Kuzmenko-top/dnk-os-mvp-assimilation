@@ -1,7 +1,7 @@
 # --- DNK-MRH-HEADER ---
 # mrh_id: "DNKOS_MVP/docs/reports/rd_assimilation/langgraph/RN-004_langgraph-research.md"
 # purpose: "SOTA Research and Evidence Trail for LangGraph and LangChain MCP Adapters"
-# author: "Maxim"
+# author: "DNK-e.com Maksym"
 # license: "MIT"
 # canonical_source: true
 # alters_files: []

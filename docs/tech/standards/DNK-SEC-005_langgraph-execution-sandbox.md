@@ -1,7 +1,7 @@
 # --- DNK-MRH-HEADER ---
 # mrh_id: "DNKOS_MVP/docs/tech/standards/DNK-SEC-005_langgraph-execution-sandbox.md"
 # purpose: "Security Standards and Sandbox Egress Controls for Stateful Graph Execution"
-# author: "Maxim"
+# author: "DNK-e.com Maksym"
 # license: "MIT"
 # canonical_source: true
 # alters_files: []

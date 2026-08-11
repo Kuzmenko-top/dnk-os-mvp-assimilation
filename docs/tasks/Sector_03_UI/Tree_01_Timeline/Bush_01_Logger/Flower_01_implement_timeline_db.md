@@ -3,7 +3,7 @@
 ## 📋 Метадані
 ---
 mrh_id: "docs/tasks/Sector_03_UI/Tree_01_Timeline/Bush_01_Logger/Flower_01_implement_timeline_db.md"
-author: "Maxim"
+author: "DNK-e.com Maksym"
 license: "DNK-INTERNAL"
 source_type: "competitor_observation"
 source_reference: "crewai/001-crewai-dashboard.png"

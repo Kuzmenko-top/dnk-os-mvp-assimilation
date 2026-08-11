@@ -14,7 +14,7 @@ tags:
 # --- DNK-MRH-HEADER ---
 # mrh_id: "DNKOS_MVP/docs/tasks/05_Flowers/Flower_17_Error_Distillation_Engine.md"
 # purpose: "Task Flower tracking Error Distillation and self-healing loop implementation"
-# author: "Maxim"
+# author: "DNK-e.com Maksym"
 # license: "MIT"
 # canonical_source: true
 # alters_files: []
