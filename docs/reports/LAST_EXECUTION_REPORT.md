@@ -1,47 +1,84 @@
 # --- DNK-MRH-HEADER ---
-# mrh_id: "docs/reports/LAST_EXECUTION_REPORT.md"
-# purpose: "Technical Execution Report for Lead Architect Antigravity AI tracking Flower 20"
+# mrh_id: "last_execution_report"
+# purpose: "Technical report of the last task execution for Antigravity AI"
 # author: "DNK-e.com Maksym"
 # license: "MIT"
-# canonical_source: true
-# alters_files: []
-# triggers_tasks: []
 # status: "Active"
 # version: "1.0.0"
 # updated_at: "2026-08-11"
 # --- END DNK-MRH-HEADER ---
 
-# LAST_EXECUTION_REPORT: FLOWER_20_CANVAS_RUNTIME_TRANSPORT
+# LAST EXECUTION REPORT (DNK-IMPL-001: PostgreSQL-first Timeline DB)
+
+**Date:** 2026-08-11  
+**Author:** Gerych (herich_librarian), Chief Orchestrator of DNK OS  
+**Target:** Antigravity AI  
+
+---
 
 ## 1. Executive Summary
-This execution completes **Flower 20 — Canvas Runtime Transport & Frontend Event Client** within the canonical workspace boundary of `DNKOS_MVP/`.
-We have successfully implemented:
-- An asynchronous, secure event bus (`RuntimeEventBus`) supporting tenant/workspace isolation, bounded subscription queues, backpressure handling, reconnect replay with `last_event_id`, and snapshot fallback trigger.
-- Integration of `RuntimeEventBus` into the hexagonal `DNKLangGraphAdapter` for automatic event dispatch during graph execution runs.
-- Integration of a WebSocket-based subscription endpoint and HTTP REST endpoints for execution controls (resume, cancel, interrupt) inside the production FastAPI service (`dnk_canvas_api/main.py`).
-- A frontend `RuntimeBridgeClient` utility featuring event subscriptions, active WebSocket connection management, reconnect/replay support, and node state reduction supporting 9 specific custom lifecycle states.
-- Addition of 9 unit and integration tests covering the bus, transport boundaries, queue limits, reconnect replay, and fallback scenarios, bringing the suite to 20 highly robust tests.
-- 100% test completion and zero regressions, with all 167 total tests passing cleanly.
 
-## 2. Technical Architecture & Component Mappings
+We have successfully implemented **DNK-IMPL-001: PostgreSQL-first Timeline DB** inside `DNKOS_MVP/` workspace boundary. This module forms the database layer for logging, tracking, and auditing all multi-agent executions, runs, tasks, and events. 
 
-### A. Backend Event Bus & Adapter Integration (`core/runtime_events.py` & `core/adapters/dnk_langgraph_adapter.py`)
-- **RuntimeEventBus**: Implemented as an async-safe, thread-safe, singleton subscription router. Holds execution-specific event history. Supports backpressure by dropping the oldest queue item when subscriber queue limits (e.g. `max_queue_size`) are exceeded.
-- **Fail-Closed Security Boundary**: Subscriptions without valid `tenant_id`, `workspace_id`, and `execution_id` raise a `PermissionError`. Events are securely drop-filtered if their source tenant/workspace does not match the subscriber's boundary credentials.
-- **Reconnect & Replay**: Matches requested `last_event_id` (sequence number) against execution history. Replays missed events to the subscriber immediately upon connection. If a gap is detected, a special `snapshot_fallback` event is queued to trigger state resynchronization.
-- **Adapter Integration**: `DNKLangGraphAdapter._publish_event` automatically publishes emitted events to the global `RuntimeEventBus` instance.
+- All tables are created idempotently.
+- Full Clean Architecture / Hexagonal structure is implemented with dedicated Ports and Adapters.
+- Concurrency-safe idempotency logic is implemented for rapid run generation using native SQL `ON CONFLICT (idempotency_key) DO NOTHING` pattern.
+- High-fidelity test suite (6 repository-specific tests + 1 path-hygiene test) runs and passes with 100% success rate on live PostgreSQL.
 
-### B. Production FastAPI WebSocket Transport & REST Endpoints (`services/dnk_canvas_api/main.py`)
-- **WebSocket Route**: `/api/v1/ws/executions/{execution_id}` accepting `tenant_id`, `workspace_id`, `canvas_id`, and optional `last_event_id` query parameters.
-- **Bidirectional Channel**: Runs two concurrent async tasks (`send_events()` and `receive_controls()`) allowing real-time event streaming and receipt of UI control payloads.
-- **REST Control Endpoints**: Exposed POST endpoints `/api/v1/executions/{execution_id}/resume` and `/api/v1/executions/{execution_id}/cancel` mapping actions securely.
+---
 
-### C. Frontend Client & Reducer State Manager (`visual_shell/web_ui/components/stitch/RuntimeBridgeClient.js`)
-- **RuntimeBridgeClient**: Implements WebSocket connection with robust exponential-backoff automatic retry.
-- **Controls Backchannel**: Features `.resume(updates)`, `.cancel()`, and `.interrupt()` which send JSON control payloads back over the socket (or fall back to HTTP REST endpoints if the socket is down).
-- **Custom 9-State Lifecycle Reducer**: Maps backend `RuntimeEvent` types into 9 UI states: `idle`, `queued`, `running`, `checkpointed`, `waiting_human`, `retrying`, `recovered`, `failed`, `completed`, `cancelled`.
+## 2. Implemented Components
 
-## 3. Verification & Validation Metrics
-- **Unit & Integration Suite**: 20 tests executed inside `test_canvas_runtime_bridge.py`. 100% success rate.
-- **Path Hygiene**: Resolved AST/indentation issue in the global `test_path_hygiene.py` test suite, enabling virtualenv paths to correctly bypass verification scanning.
-- **Complete Core & Integration Test Run**: 167 total test cases executed. 100% passed (130 core + 37 integration verification tests).
+The following files were created/modified under strict compliance with the **MRH Header Rule** (including `# author: "DNK-e.com Maksym"`):
+
+| Component | Path | Description |
+|---|---|---|
+| **Domain Models** | `DNKOS_MVP/core/models/timeline.py` | Models representing `Agent`, `Run`, `Task`, and `Event` using Pydantic. |
+| **Repository Port** | `DNKOS_MVP/core/ports/timeline_repository.py` | Port interface standard defining database contracts. |
+| **Postgres Adapter** | `DNKOS_MVP/core/adapters/postgres_timeline_repository.py` | Implementation of Port using high-performance `asyncpg` library. |
+| **Migrations** | `DNKOS_MVP/db/migrations/001_create_agents_table.sql` <br> `002_create_runs_table.sql` <br> `003_create_tasks_table.sql` <br> `004_create_events_table.sql` <br> `005_create_indexes.sql` | Fully idempotent migrations with `-- rollback` instructions. |
+| **Configuration** | `DNKOS_MVP/core/config/timeline_config.py` | System-level configurations including schema and limits support. |
+| **Verification Tests** | `DNKOS_MVP/tests/verification/test_timeline_repository.py` | Comprehensive Pytest suite covering agent lifecycle, concurrent writes, and payload limits. |
+| **Documentation** | `DNKOS_MVP/docs/tech/specs/DNK-IMPL-001_timeline_db.md` | In-depth technical specifications of the implementation. |
+
+---
+
+## 3. Core Architecture Standards & SOTA Patterns
+
+1. **Schema Isolation (Multi-Tenant Architecture)**:
+   - The implementation introduces a custom namespace schema (`timeline`) configured via environment variables to cleanly isolate timeline-specific auditing tables from existing public system tables (such as the legacy `tasks` table with integer IDs).
+   - This ensures Zero-Collision in existing databases.
+
+2. **Idempotent Multi-Agent Write Management**:
+   - Uses atomic `INSERT ... ON CONFLICT (idempotency_key) DO NOTHING RETURNING *` to handle concurrent tasks. 
+   - Under race conditions of multiple agents executing with the same idempotency key, only one run row is generated, and all concurrently executing tasks safely resolve and return the same existing run entity.
+
+3. **Size-Bound Payload Sanitization**:
+   - Automated JSON string serialization size validation is performed in the adapter before any payload insertion.
+   - Restricts payload sizes strictly to `< MAX_PAYLOAD_SIZE` (1MB default) to protect the DB from memory allocation bloat during heavy logging.
+
+---
+
+## 4. Test Verification Results
+
+All tests were successfully executed inside the `DNKOS_MVP/.venv` using Pytest.
+
+```bash
+platform darwin -- Python 3.14.4, pytest-9.1.1, pluggy-1.6.0
+collected 7 items
+
+tests/verification/test_path_hygiene.py .                                [ 14%]
+tests/verification/test_timeline_repository.py ......                    [100%]
+
+======================= 7 passed, 36 warnings in 2.61s ========================
+```
+
+---
+
+## 5. Deployment & Export Sync
+
+The `DNKOS_MVP/scripts/export-assimilation.sh` was successfully run, copy-syncing all updated specs and exporting them to the upstream review repository:
+- **Repo:** `Kuzmenko-top/dnk-os-mvp-assimilation.git`
+- **Branch:** `main` (pushed change: `ae592d5..edb8d33`)
+
+The specifications are officially exported and locked for Mentor verification.
