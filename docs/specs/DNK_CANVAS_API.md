@@ -3,7 +3,7 @@
 # purpose: "API Specification for Embedded DNK Canvas"
 # canonical_source: true
 # status: "Active"
-# version: "1.2.0"
+# version: "1.3.0"
 # updated_at: "2026-08-11"
 # author: "DNK-e.com Maksym"
 # license: "DNK-INTERNAL"
@@ -287,14 +287,15 @@ All endpoints require authentication. The request must include:
 
 ---
 
-### 2.11. S3 Asset Presign Upload URL (With Deduplication & Status Lifecycle)
+### 2.11. S3 Asset Presign Upload URL (Workspace-Scoped Deduplication & Status Lifecycle)
 - **Method**: `POST`
 - **Path**: `/api/v1/canvases/{canvas_id}/assets/presign`
-- **Description**: Generates an asset record. Tracks upload lifecycle state machine:
+- **Description**: Generates an asset record. Deduplication is strictly isolated per tenant via the combination of `workspace_id + sha256` to prevent cross-workspace file leakage. Tracks upload lifecycle state machine:
   `pending_upload ➔ uploaded ➔ verifying ➔ verified` (Error flows update status to `rejected`).
 - **Request Body**:
 ```json
 {
+  "workspace_id": "9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d",
   "filename": "screenshot_evidence_01.png",
   "mime_type": "image/png",
   "byte_size": 1542000,
@@ -302,7 +303,7 @@ All endpoints require authentication. The request must include:
 }
 ```
 - **Responses**:
-  - `200 OK` (If asset already uploaded and `verified` - global deduplication hit):
+  - `200 OK` (If asset already uploaded and `verified` - workspace-scoped deduplication hit):
     ```json
     {
       "asset_id": "f5f5e412-25ef-4311-ab3a-df79ef12cf51",

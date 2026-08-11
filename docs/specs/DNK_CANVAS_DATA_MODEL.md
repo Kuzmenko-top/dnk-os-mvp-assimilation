@@ -3,7 +3,7 @@
 # purpose: "Database Schema and Data Model Specification for Embedded DNK Canvas"
 # canonical_source: true
 # status: "Active"
-# version: "1.2.0"
+# version: "1.3.0"
 # updated_at: "2026-08-11"
 # author: "DNK-e.com Maksym"
 # license: "DNK-INTERNAL"
@@ -37,14 +37,15 @@ This document details the PostgreSQL relational database schema for the **DNK Ca
       |      +--------------------+     | PK id (UUID)           |
       +----->|    canvas_links    |     |    workspace_id (UUID) |
       |      +--------------------+     |    storage_key (VARCHAR|
-      |      | PK id (UUID)       |     |    sha256 (VARCHAR) UNIQUE
+      |      | PK id (UUID)       |     |    sha256 (VARCHAR)    |
       |      | FK document_id(UUID|     |    status (VARCHAR)    |
       |      |    element_id (TXT)|     |    mime_type (VARCHAR) |
       |      |    entity_type(VAR)|     |    byte_size (INT)     |
       |      |    entity_id (VAR) |     |    width (INT, NULL)   |
       |      |    relation_type   |     |    height (INT, NULL)  |
       |      |    created_at (TZ) |     |    created_at (TZ)     |
-      |      +--------------------+     +------------------------+
+      |      +--------------------+     |    UNIQUE(work_id,sha) |
+      |                                 +------------------------+
       |                                              ^
       |      +--------------------+                  |
       +----->| canvas_asset_links |------------------+
@@ -130,22 +131,26 @@ CREATE INDEX idx_canvas_revisions_doc ON hub_memory.canvas_revisions(document_id
 CREATE INDEX idx_canvas_revisions_created ON hub_memory.canvas_revisions(created_at);
 ```
 
-### 2.3. Assets Table: `canvas_assets` (Global Asset Library)
+### 2.3. Assets Table: `canvas_assets` (Workspace-Scoped Asset Library)
 
 Tracks external binary files (such as screenshots, annotations, and wireframes) uploaded directly to the S3-compatible cloud storage. It decouples documents from storage to allow multiple documents to share the same verified screenshot safely.
+
+To guarantee tenant isolation, deduplication is scoped per-workspace via `UNIQUE (workspace_id, sha256)` preventing cross-workspace asset leakage.
 
 ```sql
 CREATE TABLE hub_memory.canvas_assets (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     workspace_id UUID NOT NULL,
     storage_key VARCHAR(512) NOT NULL UNIQUE, -- S3 absolute path / key
-    sha256 VARCHAR(64) NOT NULL UNIQUE, -- Global SHA-256 hash for strict deduplication
+    sha256 VARCHAR(64) NOT NULL, -- Asset SHA-256 hash
     status VARCHAR(32) NOT NULL DEFAULT 'pending_upload', -- pending_upload, uploaded, verifying, verified, rejected, deleted
     mime_type VARCHAR(128) NOT NULL,
     byte_size INT NOT NULL,
     width INT,
     height INT,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    
+    CONSTRAINT uq_workspace_sha256 UNIQUE (workspace_id, sha256)
 );
 
 -- Indices
@@ -153,9 +158,9 @@ CREATE INDEX idx_canvas_assets_workspace ON hub_memory.canvas_assets(workspace_i
 CREATE INDEX idx_canvas_assets_hash ON hub_memory.canvas_assets(sha256);
 ```
 
-### 2.4. Asset Links Table: `canvas_asset_links`
+### 2.4. Asset Links Table: `canvas_asset_links` (Partial-Index-Guaranteed Uniqueness)
 
-Links a global S3 asset reference to a specific document and canvas element.
+Links a global workspace-scoped S3 asset reference to a specific document and canvas element. PostgreSQL `NULL` values are handled using two partial unique indexes instead of a single nullable unique constraint.
 
 ```sql
 CREATE TABLE hub_memory.canvas_asset_links (
@@ -164,10 +169,25 @@ CREATE TABLE hub_memory.canvas_asset_links (
     document_id UUID NOT NULL REFERENCES hub_memory.canvas_documents(id) ON DELETE CASCADE,
     element_id VARCHAR(255) NULL, -- Excalidraw element node UUID (null indicates document-level asset)
     relation_type VARCHAR(64) NOT NULL DEFAULT 'references',
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    
-    CONSTRAINT uq_canvas_asset_link UNIQUE (document_id, element_id, asset_id)
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
+
+-- 1. Uniqueness for node-level asset links (when element_id is NOT NULL)
+CREATE UNIQUE INDEX uq_canvas_asset_element_link
+ON hub_memory.canvas_asset_links (
+    document_id,
+    element_id,
+    asset_id
+)
+WHERE element_id IS NOT NULL;
+
+-- 2. Uniqueness for document-level asset links (when element_id is NULL)
+CREATE UNIQUE INDEX uq_canvas_asset_document_link
+ON hub_memory.canvas_asset_links (
+    document_id,
+    asset_id
+)
+WHERE element_id IS NULL;
 
 -- Indices
 CREATE INDEX idx_canvas_asset_links_doc ON hub_memory.canvas_asset_links(document_id);
