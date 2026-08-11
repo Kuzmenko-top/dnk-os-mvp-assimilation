@@ -1,66 +1,86 @@
 # --- DNK-MRH-HEADER ---
-# mrh_id: "docs/reports/LAST_EXECUTION_REPORT.md"
-# purpose: "Technical Execution Report: Embedded DNK Canvas Persistence (Phase 1)"
-# author: "DNK-e.com Maksym"
-# license: "MIT"
+# mrh_id: "LAST_EXECUTION_REPORT"
+# purpose: "Technical report for ANTIGRAVITY AI detailing the execution of DNK-IMPL-004 (Self-Improvement Loop)"
 # canonical_source: true
+# alters_files: []
+# triggers_tasks: []
 # status: "Completed"
 # version: "1.0.0"
 # updated_at: "2026-08-11"
+# author: "DNK-e.com Maksym"
 # --- END DNK-MRH-HEADER ---
 
-# 📊 LAST EXECUTION REPORT: EMBEDDED DNK CANVAS PERSISTENCE (PHASE 1)
+# LAST EXECUTION REPORT: DNK-IMPL-004 Self-Improvement Loop
 
-**Target Module**: `DNKOS_MVP/services/dnk_canvas_api`
-**Execution Status**: [x] PASSED (41/41 Tests Green)
-**Database Dialect**: PostgreSQL (with automatic SQLite fallback for testing isolation)
+## 1. Executive Summary
+We have successfully designed, built, tested, and integrated the **DNK OS Self-Improvement Loop** (DNK-IMPL-004) inside the canonical `DNKOS_MVP/` workspace. The system closes the cognitive loop of the OS by continuously analyzing past execution histories (Timeline DB), extracting error/bottleneck patterns, generating targeted configuration/prompt improvement proposals, evaluating safety via the Security Gate, executing updates, and writing full audit trails.
 
----
-
-## 🛠️ Accomplished Actions
-
-1. **Database Schema & Migrations (`hub_memory` Schema)**:
-   - Created database schema `hub_memory` and tables:
-     - `canvas_documents`: Tracks top-level metadata, lifecycle state, and current revision reference.
-     - `canvas_revisions`: Stores complete Excalidraw board JSON snapshots with unique index `uq_document_revision` on `(document_id, revision_number)`.
-     - `canvas_assets`: Handles content-addressed high-res binary assets (S3/MinIO tracking).
-     - `canvas_links`: Maps coordinates/elements within the canvas to Task Forest entities (Molecules, Flowers, ADRs, etc.).
-     - `canvas_audit_events`: Keeps track of human-editor and agentic-swarm mutations.
-   - Successfully authored and applied Alembic migration `2b3c4d5e6f7a_canvas_persistence.py`.
-
-2. **Core API Implementation (FastAPI)**:
-   - Fully implemented persistence contract REST endpoints:
-     - `POST /api/v1/canvases`: Initializes a canvas (unified legacy & new schemas).
-     - `GET /api/v1/canvases`: Lists canvases.
-     - `GET /api/v1/canvases/{canvas_id}`: Retrieves canvas details and injects current `scene_json`.
-     - `PUT /api/v1/canvases/{canvas_id}/scene`: Implements transaction-safe **Optimistic Concurrency Control** (`SELECT FOR UPDATE`) and server-side SHA-256 checksum verification.
-     - `POST /api/v1/canvases/{canvas_id}/force-commit`: DEST-destructive force commit restricted behind Supervisor Approval Gate.
-     - `POST /api/v1/canvases/{canvas_id}/revisions`: Creates manual milestone revisions.
-     - `GET /api/v1/canvases/{canvas_id}/revisions`: Lists revision history.
-     - `GET /api/v1/canvases/{canvas_id}/revisions/{revision_id}`: Retrieves specific revision details.
-     - `POST /api/v1/canvases/{canvas_id}/links`: Creates trace links to domain entities.
-     - `DELETE /api/v1/canvases/{canvas_id}/links/{link_id}`: Removes entity links.
-
-3. **Backward Compatibility & Dual-Storage Synchronization**:
-   - Preserved legacy `/snapshots` and `/snapshots/latest` routes for existing Web UI components and Express Daemon proxies.
-   - Adapted legacy endpoints to seamlessly read/write from `hub_memory` tables (`canvas_documents` and `canvas_revisions`), ensuring 100% backward compatibility and keeping existing Flower 20 WebSocket/resync flows fully operational.
-
-4. **Testing & Verification (41 Tests Passed)**:
-   - Authored `DNKOS_MVP/core/tests/test_canvas_persistence_api.py` covering E2E, legacy snapshots, OCC stale-conflict handling, unique constraint validation under load, and Alembic integration checks.
-   - Verified and ran all canvas tests successfully:
-     - `test_canvas_runtime_bridge.py` ➔ Passed
-     - `test_canvas_pattern_sync.py` ➔ Passed
-     - `test_canvas_flow.py` ➔ Passed
-     - `test_canvas_custom_nodes.py` ➔ Passed
-     - `test_canvas_persistence_api.py` ➔ Passed
+All 7 verification tests have passed successfully. The updated specs have been exported and pushed to the remote mentor-sync repository `dnk-os-mvp-assimilation` on GitHub.
 
 ---
 
-## 🔒 Concurrency Validation (Load Testing Results)
-Simultaneous write requests targeting the exact same expected revision number on a canvas successfully trigger `409 Conflict` (REVISION_CONFLICT) for losing concurrent calls, preventing the **Silent Overwrite Problem** reliably across both PostgreSQL (via row-level lock) and SQLite (via unique index constraint and `IntegrityError` rollback).
+## 2. Component Deliverables & Architecture
+
+All newly created modules reside in `DNKOS_MVP/`:
+
+### A. Domain Models (`core/models/improvement.py`)
+Defines strictly typed, validation-enforced domain models using Pydantic:
+- `ImprovementSuggestion`: Suggestion payload tracking category, priority, estimated impact, and suggested action.
+- `RunAnalysis`: Statistics summary of an agent's past executions.
+- `ImprovementPlan`: Executable plan containing prioritized suggestions, overall impact assessment, and rollback procedures.
+
+### B. Run Analyzer (`core/analyzers/run_analyzer.py`)
+- Standardizes pattern discovery via the abstract `RunAnalyzer` interface.
+- Implements `PostgresRunAnalyzer`, querying the Postgres database to calculate success rates, average duration, and identify common errors.
+- Automatic heuristic pattern detection triggers proposals for:
+  - **Prompt Updates** (on high failure rates)
+  - **Retry Policy Adjustments** (on rate-limits/429 errors or failures)
+  - **Timeout Extensions** (on explicit timeouts or long execution times)
+  - **Tool Selection Tuning** (on tool-related errors)
+
+### C. Improvement Generator (`core/generators/improvement_generator.py`)
+- Standardizes plan creation via `ImprovementGenerator` interface.
+- Implements `HeuristicImprovementGenerator`, prioritizing suggestions (High -> Medium -> Low), computing cumulative impact, and supplying fallback rollback procedures.
+
+### D. Improvement Executor (`core/executors/improvement_executor.py`)
+- Standardizes modification actions via `ImprovementExecutor` interface.
+- Implements `PostgresImprovementExecutor`, adjusting the target agent configurations and logging audit trail events (`improvement_applied`) into the PostgreSQL timeline schema.
+
+### E. Security Service Integration (`core/services/improvement_security_service.py`)
+- Encapsulates policy evaluations using `SecurityGateService`.
+- High-impact changes (`estimated_impact == "high"`) or restricted categories trigger manual approval requirements (`PermissionError` raised for manual approval gate).
+- Disallowed suggestions (`allowed == False`) are gracefully blocked.
+
+### F. Global Config (`core/config/improvement_config.py`)
+Tracks configuration limits and thresholds:
+- `IMPROVEMENT_ANALYSIS_WINDOW`: default 7 days.
+- `IMPROVEMENT_MIN_SUCCESS_RATE`: default 0.8.
+- `IMPROVEMENT_AUTO_APPROVE_LOW_IMPACT`: default True.
+- `IMPROVEMENT_REQUIRE_APPROVAL_CATEGORIES`: default `["prompt", "retry_policy"]`.
 
 ---
 
-## 📈 Next Steps
-- Initiate full visual smoke test inside Docker (`run dev`).
-- Move forward to **Phase 2: Full Entity Linking & Agentic Collaboration**.
+## 3. Verification Test Results
+
+Implemented 7 target test cases inside `DNKOS_MVP/tests/verification/test_improvement_loop.py`. All tests run successfully:
+
+```bash
+======================== 7 passed, 44 warnings in 3.45s ========================
+```
+
+| # | Test Name | Target Verified | Status |
+|---|---|---|---|
+| 1 | `test_analyze_runs_success_rate` | Success rate and average duration calculation | **PASSED** [x] |
+| 2 | `test_detect_patterns_common_errors` | Category-based suggestion extraction (timeout, retry, prompt) | **PASSED** [x] |
+| 3 | `test_generate_plan_priority` | Priority sorting order (High -> Medium -> Low) | **PASSED** [x] |
+| 4 | `test_execute_plan_prompt_update` | Prompt modification within configuration mapping | **PASSED** [x] |
+| 5 | `test_execute_plan_retry_policy_update` | Retry policy modification in executor configurations | **PASSED** [x] |
+| 6 | `test_security_gate_approval_required` | Raising approval errors for high impact and restricted categories | **PASSED** [x] |
+| 7 | `test_audit_trail` | Recording `improvement_applied` event audits in database | **PASSED** [x] |
+
+---
+
+## 4. Repository & Sync Status
+1. **Local Repository (`DNKOS_MVP`)**: Files added, verified, and committed locally under branch `main` (`commit d57f1fd`).
+2. **Path Hygiene**: Runs `test_path_hygiene.py` successfully (100% path compliance).
+3. **Mentor Sync (`dnk-os-mvp-assimilation`)**: Markdown spec successfully pushed to the remote repository.
