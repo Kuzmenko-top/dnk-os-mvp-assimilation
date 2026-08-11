@@ -6,7 +6,7 @@
 # version: "1.0.0"
 # updated_at: "2026-08-10"
 # author: "DNK-e.com Maksym"
-# license: "MIT"
+# license: "DNK-INTERNAL"
 # --- END DNK-MRH-HEADER ---
 
 # Canvas Backend Ownership & Integration Architecture

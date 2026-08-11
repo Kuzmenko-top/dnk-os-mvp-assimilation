@@ -3,10 +3,10 @@
 # purpose: "Architecture Decision Record: Embedded Excalidraw-based DNK Canvas"
 # canonical_source: true
 # status: "Accepted"
-# version: "1.0.0"
+# version: "1.1.0"
 # updated_at: "2026-08-11"
 # author: "DNK-e.com Maksym"
-# license: "MIT"
+# license: "DNK-INTERNAL"
 # --- END DNK-MRH-HEADER ---
 
 # 🏛️ ARCHITECTURAL DECISION RECORD (ADR-0045)
@@ -19,7 +19,7 @@
 
 For competitive analysis, visual modeling, and strategic ideation, the DNK OS team has been utilizing an external Excalidraw interface. This has introduced serious friction:
 - **Data Fragmentation**: Scenes are stored in ephemeral local storage or isolated browser sessions, leading to accidental data loss.
-- **Traceability Gap**: No native mapping exists between visual objects on the canvas and core entities (Competitors, Insights, Task Forest Flowers, ADRs, or active Agent Runs).
+- **Traceability Gap**: No native mapping exists between visual elements (nodes) on the canvas and core entities (Competitors, Insights, Task Forest Flowers, ADRs, or active Agent Runs).
 - **Agentic Blindness**: AI agents cannot programmatically query or modify visual layouts to aid human engineers.
 - **Asset Bloat**: Large screenshots embedded inside Excalidraw JSON scenes as raw Base64 strings crash databases and sluggishly load over network streams.
 
@@ -44,7 +44,7 @@ We will embed `@excalidraw/excalidraw` directly as the official frontend canvas 
 
 ## 3. Licensing, Security, and Self-Hosting Risks
 
-- **Licensing**: Excalidraw is distributed under the **MIT License**, which is highly permissive. There is zero commercial threat, copyright risk, or usage fee associated with embedding or modifying it in self-hosted deployments.
+- **Licensing**: The Excalidraw repository is MIT-licensed; commercial integration is permitted subject to preserving required copyright and license notices and reviewing third-party dependency licenses.
 - **Asset Privacy & Self-Hosting**: We reject the public Excalidraw sharing backend. All scenes and asset blobs are stored locally/privately in our PostgreSQL and S3-compatible (MinIO) stores.
 - **Bundle Weight**: `@excalidraw/excalidraw` relies on heavy browser libraries (Canvas API, canvas-roundrect-polyfill). To mitigate page-load latency, the component is dynamically imported with Next.js SSR disabled (`ssr: false`) and lazy loaded.
 
@@ -55,7 +55,7 @@ We will embed `@excalidraw/excalidraw` directly as the official frontend canvas 
 As codified in `docs/architecture/canvas-backend-ownership.md`:
 1. **FastAPI (`dnk_orchestrator`)** is the absolute owner of database persistence, revisions, and business validation.
 2. **PostgreSQL** is the production data store. SQLite is limited to test fixtures.
-3. **Decoupled Binary Storage**: Any screenshot or attachment is extracted on the client, hashed (SHA-256), uploaded directly to S3 via pre-signed URLs, and referenced in the scene JSON via UUID.
+3. **Decoupled Binary Storage**: Any screenshot or attachment is extracted on the client, hashed (SHA-256), uploaded directly to S3 via pre-signed URLs, and referenced in the scene JSON via UUID. No intermediate Express sidecar proxy is used on the critical path of Phase 1-3.
 
 ---
 
@@ -64,13 +64,14 @@ As codified in `docs/architecture/canvas-backend-ownership.md`:
 To resolve race conditions during concurrent editing:
 - No silent overrides are allowed.
 - Every scene update request (`PUT`) must pass its `expected_revision` number.
+- The server uses transactional row locks (`SELECT FOR UPDATE` on `canvas_documents`) to guarantee atomic updates and block overlapping saves.
 - If the current revision number in PostgreSQL is higher, the backend throws a `409 Conflict`.
-- The frontend interceptor triggers a "Merge Conflict" popup, allowing the user to view a diff, restore the server copy, or force-commit their local changes.
+- The frontend interceptor triggers a "Merge Conflict" popup, allowing the user to view a diff, restore the server copy, or trigger a force-commit (restricted behind the Supervisor Approval Gate).
 
 ---
 
 ## 6. Consequences & Future Outlook
 
-- **Immediate Gains**: Centralized persistence, automatic revision backup, native linking to Task Forest, direct AI agent collaboration.
+- **Immediate Gains**: Centralized persistence, automatic revision backup, native element-level linking to Task Forest, direct AI agent collaboration.
 - **Trade-offs**: Next.js bundle sizes increase by ~1.2MB (lazy loaded). Self-hosted setups now require an S3-compatible backend (or MinIO container).
 - **Collaboration**: Real-time WebSocket multi-user collaboration is deferred to **Phase 4** to ensure Phase 1-3 deliver immediate persistence and agentic utility without scheduling overhead.

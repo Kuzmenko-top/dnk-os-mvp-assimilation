@@ -3,10 +3,10 @@
 # purpose: "Database Schema and Data Model Specification for Embedded DNK Canvas"
 # canonical_source: true
 # status: "Active"
-# version: "1.0.0"
+# version: "1.2.0"
 # updated_at: "2026-08-11"
 # author: "DNK-e.com Maksym"
-# license: "MIT"
+# license: "DNK-INTERNAL"
 # --- END DNK-MRH-HEADER ---
 
 # 🗄️ DNK OS DATA MODEL SPECIFICATION: DNK CANVAS DATABASE SCHEMA
@@ -35,15 +35,27 @@ This document details the PostgreSQL relational database schema for the **DNK Ca
  +------------------------+             |     canvas_assets      |
       |                                 +------------------------+
       |      +--------------------+     | PK id (UUID)           |
-      +----->|    canvas_links    |     | FK document_id (UUID)  |
+      +----->|    canvas_links    |     |    workspace_id (UUID) |
       |      +--------------------+     |    storage_key (VARCHAR|
-      |      | PK id (UUID)       |     |    sha256 (VARCHAR)    |
-      |      | FK document_id(UUID|     |    mime_type (VARCHAR) |
+      |      | PK id (UUID)       |     |    sha256 (VARCHAR) UNIQUE
+      |      | FK document_id(UUID|     |    status (VARCHAR)    |
+      |      |    element_id (TXT)|     |    mime_type (VARCHAR) |
       |      |    entity_type(VAR)|     |    byte_size (INT)     |
       |      |    entity_id (VAR) |     |    width (INT, NULL)   |
       |      |    relation_type   |     |    height (INT, NULL)  |
       |      |    created_at (TZ) |     |    created_at (TZ)     |
       |      +--------------------+     +------------------------+
+      |                                              ^
+      |      +--------------------+                  |
+      +----->| canvas_asset_links |------------------+
+      |      +--------------------+
+      |      | PK id (UUID)       |
+      |      | FK asset_id (UUID) |
+      |      | FK document_id(UUID|
+      |      |    element_id (TXT)|
+      |      |    relation_type   |
+      |      |    created_at (TZ) |
+      |      +--------------------+
       |
       |      +--------------------+
       +----->| canvas_audit_events|
@@ -63,7 +75,7 @@ This document details the PostgreSQL relational database schema for the **DNK Ca
 
 ## 2. PostgreSQL DDL Specification
 
-All tables are created under the `hub_memory` schema. If the schema does not exist, Alembic will initialize it before executing the table migration.
+All tables are created under the `hub_memory` schema.
 
 ### 2.1. Documents Table: `canvas_documents`
 
@@ -118,16 +130,17 @@ CREATE INDEX idx_canvas_revisions_doc ON hub_memory.canvas_revisions(document_id
 CREATE INDEX idx_canvas_revisions_created ON hub_memory.canvas_revisions(created_at);
 ```
 
-### 2.3. Assets Table: `canvas_assets`
+### 2.3. Assets Table: `canvas_assets` (Global Asset Library)
 
-Tracks external binary files (such as screenshots, annotations, and wireframes) uploaded directly to the S3-compatible cloud storage.
+Tracks external binary files (such as screenshots, annotations, and wireframes) uploaded directly to the S3-compatible cloud storage. It decouples documents from storage to allow multiple documents to share the same verified screenshot safely.
 
 ```sql
 CREATE TABLE hub_memory.canvas_assets (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    document_id UUID NOT NULL REFERENCES hub_memory.canvas_documents(id) ON DELETE CASCADE,
+    workspace_id UUID NOT NULL,
     storage_key VARCHAR(512) NOT NULL UNIQUE, -- S3 absolute path / key
-    sha256 VARCHAR(64) NOT NULL, -- Asset SHA-256 hash for strict deduplication
+    sha256 VARCHAR(64) NOT NULL UNIQUE, -- Global SHA-256 hash for strict deduplication
+    status VARCHAR(32) NOT NULL DEFAULT 'pending_upload', -- pending_upload, uploaded, verifying, verified, rejected, deleted
     mime_type VARCHAR(128) NOT NULL,
     byte_size INT NOT NULL,
     width INT,
@@ -136,32 +149,75 @@ CREATE TABLE hub_memory.canvas_assets (
 );
 
 -- Indices
-CREATE INDEX idx_canvas_assets_doc ON hub_memory.canvas_assets(document_id);
+CREATE INDEX idx_canvas_assets_workspace ON hub_memory.canvas_assets(workspace_id);
 CREATE INDEX idx_canvas_assets_hash ON hub_memory.canvas_assets(sha256);
 ```
 
-### 2.4. Links Table: `canvas_links`
+### 2.4. Asset Links Table: `canvas_asset_links`
 
-Connects coordinates and objects within the canvas space directly to domain entities inside the DNK OS Task Forest, competitor research databases, or active execution logs.
+Links a global S3 asset reference to a specific document and canvas element.
+
+```sql
+CREATE TABLE hub_memory.canvas_asset_links (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    asset_id UUID NOT NULL REFERENCES hub_memory.canvas_assets(id) ON DELETE CASCADE,
+    document_id UUID NOT NULL REFERENCES hub_memory.canvas_documents(id) ON DELETE CASCADE,
+    element_id VARCHAR(255) NULL, -- Excalidraw element node UUID (null indicates document-level asset)
+    relation_type VARCHAR(64) NOT NULL DEFAULT 'references',
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    
+    CONSTRAINT uq_canvas_asset_link UNIQUE (document_id, element_id, asset_id)
+);
+
+-- Indices
+CREATE INDEX idx_canvas_asset_links_doc ON hub_memory.canvas_asset_links(document_id);
+CREATE INDEX idx_canvas_asset_links_asset ON hub_memory.canvas_asset_links(asset_id);
+```
+
+### 2.5. Links Table: `canvas_links` (Partial-Index-Guaranteed Uniqueness)
+
+Connects coordinates and objects (such as Excalidraw element UUIDs) within the canvas space directly to domain entities inside the DNK OS Task Forest, competitor research databases, or active execution logs.
+
+PostgreSQL `NULL` values are handled using two distinct partial unique indexes instead of a single nullable unique constraint to prevent duplicate links.
 
 ```sql
 CREATE TABLE hub_memory.canvas_links (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     document_id UUID NOT NULL REFERENCES hub_memory.canvas_documents(id) ON DELETE CASCADE,
+    element_id VARCHAR(255) NULL, -- Excalidraw element node UUID (null indicates document-level link)
     entity_type VARCHAR(64) NOT NULL, -- competitor, screenshot, insight, flower, adr, agent_run
     entity_id VARCHAR(255) NOT NULL, -- Canonical string identifier or UUID
     relation_type VARCHAR(64) NOT NULL DEFAULT 'references',
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    
-    CONSTRAINT uq_canvas_entity_link UNIQUE (document_id, entity_type, entity_id)
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
+
+-- 1. Uniqueness for node-level links (when element_id is NOT NULL)
+CREATE UNIQUE INDEX uq_canvas_element_link
+ON hub_memory.canvas_links (
+    document_id,
+    element_id,
+    entity_type,
+    entity_id,
+    relation_type
+)
+WHERE element_id IS NOT NULL;
+
+-- 2. Uniqueness for document-level links (when element_id is NULL)
+CREATE UNIQUE INDEX uq_canvas_document_link
+ON hub_memory.canvas_links (
+    document_id,
+    entity_type,
+    entity_id,
+    relation_type
+)
+WHERE element_id IS NULL;
 
 -- Indices
 CREATE INDEX idx_canvas_links_doc ON hub_memory.canvas_links(document_id);
 CREATE INDEX idx_canvas_links_entity ON hub_memory.canvas_links(entity_type, entity_id);
 ```
 
-### 2.5. Audit Events Table: `canvas_audit_events`
+### 2.6. Audit Events Table: `canvas_audit_events`
 
 Maintains a tamper-proof audit trail tracking human-editor and agentic-swarm mutations alike. Useful for monitoring agentic actions and triggering recovery procedures.
 
@@ -171,7 +227,7 @@ CREATE TABLE hub_memory.canvas_audit_events (
     document_id UUID NOT NULL REFERENCES hub_memory.canvas_documents(id) ON DELETE CASCADE,
     actor_type VARCHAR(64) NOT NULL, -- human, agent
     actor_id VARCHAR(255) NOT NULL, -- User UUID or Agent Identifier (e.g., dnk_koder)
-    event_type VARCHAR(128) NOT NULL, -- create, edit_scene, link_entity, unlink_entity, add_asset, delete
+    event_type VARCHAR(128) NOT NULL, -- create, edit_scene, link_entity, unlink_entity, add_asset, delete, force_commit
     revision_id UUID REFERENCES hub_memory.canvas_revisions(id) ON DELETE SET NULL,
     payload JSONB DEFAULT '{}'::jsonb NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL
@@ -188,51 +244,6 @@ CREATE INDEX idx_canvas_audit_type ON hub_memory.canvas_audit_events(event_type)
 ## 3. Storage Optimization & Separation Rules
 
 To prevent database bloating and lag in the frontend:
-1. **Raw Canvas Elements Separated**: Large assets are stored in object storage (MinIO/S3), while metadata are indexed in `canvas_assets`.
+1. **Raw Canvas Elements Separated**: Large assets are stored in object storage (MinIO/S3), while metadata are indexed in `canvas_assets` and linked via `canvas_asset_links`.
 2. **Checksum Integrity Enforcement**: All revision inputs are hashed on the client-side (`scene_checksum`). The FastAPI backend recalculates the hash to guarantee no data was corrupted during transit.
 3. **No Embedded Base64**: The client code strips raw base64 images from Excalidraw exports, uploads them separately, and maps them to standard asset nodes containing `asset_id`.
-
----
-
-## 4. Alembic Migration Strategy
-
-All migration operations must be script-driven via Python. The migration scripts will be placed inside `DNKOS_MVP/core/migrations/versions/`.
-
-```python
-# Sample Alembic Migration Script Template
-# File: core/migrations/versions/xxxx_add_canvas_tables.py
-
-"""add canvas tables
-
-Revision ID: xxxx_add_canvas_tables
-Revises: previous_revision
-Create Date: 2026-08-11
-"""
-from alembic import op
-import sqlalchemy as sa
-from sqlalchemy.dialects import postgresql
-
-def upgrade():
-    # 1. Create Schema if not exists
-    op.execute("CREATE SCHEMA IF NOT EXISTS hub_memory")
-    
-    # 2. Create documents table
-    op.create_table(
-        'canvas_documents',
-        sa.Column('id', postgresql.UUID(as_uuid=True), primary_key=True, server_default=sa.text('gen_random_uuid()')),
-        sa.Column('workspace_id', postgresql.UUID(as_uuid=True), nullable=False),
-        sa.Column('title', sa.String(length=255), nullable=False),
-        sa.Column('description', sa.Text(), nullable=True),
-        sa.Column('document_type', sa.String(length=64), server_default='excalidraw', nullable=False),
-        sa.Column('current_revision_id', postgresql.UUID(as_uuid=True), nullable=True),
-        sa.Column('created_by', sa.String(length=255), nullable=False),
-        sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('CURRENT_TIMESTAMP'), nullable=False),
-        sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.text('CURRENT_TIMESTAMP'), nullable=False),
-        sa.Column('status', sa.String(length=32), server_default='active', nullable=False),
-        sa.Column('metadata', postgresql.JSONB(astext_type=sa.Text()), server_default='{}', nullable=False),
-        schema='hub_memory'
-    )
-    
-    # [Table creation scripts continue for revisions, assets, links, and audit_events]
-    # Detailed index and constraint setup is configured via Alembic operations.
-```

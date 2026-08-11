@@ -3,10 +3,10 @@
 # purpose: "API Specification for Embedded DNK Canvas"
 # canonical_source: true
 # status: "Active"
-# version: "1.0.0"
+# version: "1.2.0"
 # updated_at: "2026-08-11"
 # author: "DNK-e.com Maksym"
-# license: "MIT"
+# license: "DNK-INTERNAL"
 # --- END DNK-MRH-HEADER ---
 
 # 📡 DNK OS API SPECIFICATION: DNK CANVAS OPENAPI ENDPOINTS
@@ -28,7 +28,6 @@ All endpoints require authentication. The request must include:
 ### 2.1. Create Canvas
 - **Method**: `POST`
 - **Path**: `/api/v1/canvases`
-- **Description**: Creates a new canvas document.
 - **Request Body**:
 ```json
 {
@@ -103,7 +102,7 @@ All endpoints require authentication. The request must include:
 ### 2.4. Save Canvas Scene (Optimistic Concurrency Control)
 - **Method**: `PUT`
 - **Path**: `/api/v1/canvases/{canvas_id}/scene`
-- **Description**: Updates the canvas scene. It enforces optimistic locking to prevent overlapping edits.
+- **Description**: Updates the canvas scene. It enforces transaction-safe optimistic locking (`SELECT FOR UPDATE`) to prevent overlapping edits.
 - **Request Body**:
 ```json
 {
@@ -143,10 +142,34 @@ All endpoints require authentication. The request must include:
 
 ---
 
-### 2.5. Create Canvas Manual Revision (Milestone)
+### 2.5. Force Overwrite Canvas Scene (Force-Commit via Supervisor Approval)
+- **Method**: `POST`
+- **Path**: `/api/v1/canvases/{canvas_id}/force-commit`
+- **Description**: Overwrites a canvas scene ignoring optimistic locks. Since this is a destructive action, it is blocked by the **Supervisor Approval Gate** and requires human confirmation with an explicit override reason.
+- **Request Body**:
+```json
+{
+  "override_reason": "Emergency rollback to resolve data corruption",
+  "parent_revision_number": 2,
+  "scene_json": { "type": "excalidraw", "elements": [...] },
+  "scene_checksum": "c2a3b04c8..."
+}
+```
+- **Response** (`200 OK` or `202 Accepted` if awaiting approval):
+```json
+{
+  "status": "force_committed",
+  "new_revision_number": 5,
+  "audit_event_id": "81cf5d22-1b11-477c-a81d-e8cf2cbdfb12",
+  "approved_by": "Supervisor-Maksym"
+}
+```
+
+---
+
+### 2.6. Create Canvas Manual Revision (Milestone)
 - **Method**: `POST`
 - **Path**: `/api/v1/canvases/{canvas_id}/revisions`
-- **Description**: Explicitly commits a milestone revision (named tag) in the history.
 - **Request Body**:
 ```json
 {
@@ -165,7 +188,7 @@ All endpoints require authentication. The request must include:
 
 ---
 
-### 2.6. List Revisions
+### 2.7. List Revisions
 - **Method**: `GET`
 - **Path**: `/api/v1/canvases/{canvas_id}/revisions`
 - **Response** (`200 OK`):
@@ -178,13 +201,6 @@ All endpoints require authentication. The request must include:
       "change_summary": "Milestone: Finished competitors mapping",
       "created_by": "user-uuid-1234",
       "created_at": "2026-08-11T13:00:00Z"
-    },
-    {
-      "id": "b11a43a0-761a-4712-a1df-fbc7c01289cf",
-      "revision_number": 4,
-      "change_summary": "Added comparison rect nodes",
-      "created_by": "user-uuid-1234",
-      "created_at": "2026-08-11T12:45:00Z"
     }
   ]
 }
@@ -192,7 +208,7 @@ All endpoints require authentication. The request must include:
 
 ---
 
-### 2.7. Retrieve Revision Details
+### 2.8. Retrieve Revision Details
 - **Method**: `GET`
 - **Path**: `/api/v1/canvases/{canvas_id}/revisions/{revision_id}`
 - **Response** (`200 OK`):
@@ -210,15 +226,16 @@ All endpoints require authentication. The request must include:
 
 ---
 
-### 2.8. Link Entity to Canvas
+### 2.9. Link Entity to Canvas Element / Document
 - **Method**: `POST`
 - **Path**: `/api/v1/canvases/{canvas_id}/links`
 - **Request Body**:
 ```json
 {
-  "entity_type": "competitor", // competitor, screenshot, insight, flower, adr, agent_run
-  "entity_id": "competitor_id_shopify_plus",
-  "relation_type": "competitor_profile"
+  "element_id": "excalidraw-element-uuid", -- Null indicates linking to the document root
+  "entity_type": "insight", -- competitor, screenshot, insight, flower, adr, agent_run
+  "entity_id": "INSIGHT_001",
+  "relation_type": "derived_from"
 }
 ```
 - **Response** (`201 Created`):
@@ -226,33 +243,55 @@ All endpoints require authentication. The request must include:
 {
   "link_id": "d0d0f411-456c-489f-bbd2-cc684a0d9dfc",
   "canvas_id": "e4b6c310-863a-4467-8e6d-6ee89dcb926c",
-  "entity_type": "competitor",
-  "entity_id": "competitor_id_shopify_plus",
-  "relation_type": "competitor_profile",
+  "element_id": "excalidraw-element-uuid",
+  "entity_type": "insight",
+  "entity_id": "INSIGHT_001",
+  "relation_type": "derived_from",
   "created_at": "2026-08-11T13:10:00Z"
 }
 ```
 
 ---
 
-### 2.9. Remove Entity Link
+### 2.10. Remove Entity Link
 - **Method**: `DELETE`
 - **Path**: `/api/v1/canvases/{canvas_id}/links/{link_id}`
-- **Security Check**: Since unlinking is considered a destructive action, if triggered by an agent, this request will generate a Supervisor Approval Gate prompt before committing.
-- **Response** (`200 OK` or `202 Accepted` if pending approval):
-```json
-{
-  "status": "deleted",
-  "link_id": "d0d0f411-456c-489f-bbd2-cc684a0d9dfc",
-  "message": "Entity link removed successfully."
-}
-```
+- **Security & Authorization Rules**:
+  - **Human Operator**: Allowed immediately according to RBAC. Returns `200 OK`.
+  - **AI Sub-Agent**: Triggers **REQUIRE_APPROVAL**. Deletion is blocked at the Supervisor Approval Gate. The signature is bound to `canvas_id`, `link_id`, `actor_id`, `action`, and `arguments_hash`. Returns `202 Accepted` indicating approval is pending.
+- **Responses**:
+  - `200 OK` (Human deletion completed):
+    ```json
+    {
+      "status": "deleted",
+      "link_id": "d0d0f411-456c-489f-bbd2-cc684a0d9dfc",
+      "message": "Entity link removed successfully."
+    }
+    ```
+  - `202 Accepted` (Agent-triggered; approval pending):
+    ```json
+    {
+      "status": "pending_approval",
+      "approval_id": "a5a5e31c-7bbf-4c7b-bc82-9cf3d2ef91a1",
+      "link_id": "d0d0f411-456c-489f-bbd2-cc684a0d9dfc",
+      "message": "Agent deletion request intercepted. Awaiting supervisor approval."
+    }
+    ```
+  - `403 Forbidden` (Access denied / Supervisor rejected):
+    ```json
+    {
+      "error": "ACCESS_DENIED",
+      "message": "The link deletion request has been denied."
+    }
+    ```
 
 ---
 
-### 2.10. S3 Asset Presign Upload URL
+### 2.11. S3 Asset Presign Upload URL (With Deduplication & Status Lifecycle)
 - **Method**: `POST`
 - **Path**: `/api/v1/canvases/{canvas_id}/assets/presign`
+- **Description**: Generates an asset record. Tracks upload lifecycle state machine:
+  `pending_upload ➔ uploaded ➔ verifying ➔ verified` (Error flows update status to `rejected`).
 - **Request Body**:
 ```json
 {
@@ -262,18 +301,45 @@ All endpoints require authentication. The request must include:
   "sha256": "4a5c53102bc0f0d2c31ab..."
 }
 ```
+- **Responses**:
+  - `200 OK` (If asset already uploaded and `verified` - global deduplication hit):
+    ```json
+    {
+      "asset_id": "f5f5e412-25ef-4311-ab3a-df79ef12cf51",
+      "status": "verified",
+      "duplicate_hit": true,
+      "storage_key": "canvases/assets/f5f5e412-25ef-4311-ab3a-df79ef12cf51.png"
+    }
+    ```
+  - `201 Created` (If asset is new, returns upload details with `pending_upload` status):
+    ```json
+    {
+      "asset_id": "f5f5e412-25ef-4311-ab3a-df79ef12cf51",
+      "status": "pending_upload",
+      "duplicate_hit": false,
+      "upload_url": "https://minio.dnk-os.local/canvases/assets/f5f5e412?AWSAccessKeyId=...",
+      "storage_key": "canvases/assets/f5f5e412-25ef-4311-ab3a-df79ef12cf51.png"
+    }
+    ```
+
+---
+
+### 2.12. Commit Uploaded S3 Asset
+- **Method**: `POST`
+- **Path**: `/api/v1/canvases/{canvas_id}/assets/{asset_id}/commit`
+- **Description**: Informs the server that the asset has been successfully uploaded to S3. The status transitions from `uploaded` to `verifying` while the backend checks S3 object existence, workspace auth, SHA-256 match, and size. If checks pass, status transitions to `verified`.
 - **Response** (`200 OK`):
 ```json
 {
   "asset_id": "f5f5e412-25ef-4311-ab3a-df79ef12cf51",
-  "upload_url": "https://minio.dnk-os.local/canvases/assets/f5f5e412?AWSAccessKeyId=...",
-  "storage_key": "canvases/assets/f5f5e412-25ef-4311-ab3a-df79ef12cf51.png"
+  "status": "verified",
+  "byte_size": 1542000
 }
 ```
 
 ---
 
-### 2.11. Export Canvas Render
+### 2.13. Export Canvas Render
 - **Method**: `GET`
 - **Path**: `/api/v1/canvases/{canvas_id}/export`
 - **Query Parameters**:
@@ -282,37 +348,3 @@ All endpoints require authentication. The request must include:
 - **Response**:
   - If `excalidraw`: Returns `{ "type": "excalidraw", "elements": [...] }`
   - If `png` or `svg`: Returns the raw binary stream with appropriate `Content-Type: image/png` or `image/svg+xml`.
-
----
-
-### 2.12. Execute Agent Programmatic Canvas Actions
-- **Method**: `POST`
-- **Path**: `/api/v1/canvases/{canvas_id}/agent-actions`
-- **Request Body**:
-```json
-{
-  "action_type": "append_canvas_elements", // create_canvas, read_canvas, append_canvas_elements, create_canvas_revision, link_canvas_to_insight, link_canvas_to_flower, add_evidence_reference
-  "idempotency_key": "idem-key-810dcf22",
-  "expected_revision": 5,
-  "payload": {
-    "elements": [
-      {
-        "type": "text",
-        "text": "🤖 Agent Observation: Competitor relies on dynamic hydrations.",
-        "x": 400,
-        "y": 600,
-        "strokeColor": "#ff0000"
-      }
-    ]
-  }
-}
-```
-- **Response** (`200 OK`):
-```json
-{
-  "status": "success",
-  "action_id": "a5e5d32c-7bbf-4c7b-bc82-9cf3d2ef91a1",
-  "new_revision_number": 6,
-  "audit_event_id": "999f8d1c-b17c-47fc-8f7e-77d01cbcecf1"
-}
-```
