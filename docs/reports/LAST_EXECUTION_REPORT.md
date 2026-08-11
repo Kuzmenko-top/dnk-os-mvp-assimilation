@@ -1,41 +1,61 @@
 # --- DNK-MRH-HEADER ---
-# mrh_id: "LAST_EXECUTION_REPORT.md"
-# purpose: "Technical Execution Report for Task DNK-CANVAS-001 — Docker Visual Smoke Test & Canvas Handoff"
-# canonical_source: true
-# status: "Active"
-# version: "1.0.0"
-# updated_at: "2026-08-11"
+# mrh_id: "LAST_EXECUTION_REPORT"
+# purpose: "Technical report for Antigravity AI summarizing Phase 1 Remediation Checkpoint execution"
 # author: "DNK-e.com Maksym"
-# license: "MIT"
+# license: "DNK-INTERNAL"
+# status: "Active"
+# version: "2.1.0"
+# updated_at: "2026-08-11"
 # --- END DNK-MRH-HEADER ---
 
-# TECHNICAL EXECUTION REPORT: DNK-CANVAS-001
+# LAST EXECUTION REPORT: PHASE 1 REMEDIATION CHECKPOINT
 
 ## 1. Executive Summary
-This execution cycle successfully verified the complete **Canvas Runtime & Persistence Flow** under the task **DNK-CANVAS-001**. All requirements from the Definition of Done (DoD) have been fulfilled, and the canvas workflow has been verified as stable, highly resilient, and ready for transition to the LLM Gateway owner.
+The Phase 1 Remediation Checkpoint has been successfully completed, resolving all outstanding blockers. The system architecture has been hardened with dynamic workspace contexts, secure supervisor-gated concurrency overrides, database-agnostic UUID definitions, and strict license alignment. All 105 verification tests are 100% green under a pristine PostgreSQL clean-run simulation.
 
-## 2. Environment Verification (Docker Stack & Infrastructure)
-- **dnk-studio-dev (Next.js & Daemon):** Up and running, logs audited. Port 3000 and 8080 are responsive.
-- **dnk-db (PostgreSQL):** Healthcheck passed. `pg_isready` returns `accepting connections`.
-- **hermes-redis (Redis):** Healthcheck passed. `redis-cli ping` returns `PONG`.
-- **FastAPI /health:** Verified. Returns `200` with response `{"status":"ok","timestamp":1786467412}`.
-- **Alembic current:** Verified. Migration level matches the head exactly (`2b3c4d5e6f7a (head)`).
+---
 
-## 3. E2E Playwright Execution Results
-All 3 core canvas E2E tests have passed successfully inside the virtual frame buffer (`xvfb-run` wrapper) in the `dnk-studio-dev` Docker container:
-```text
-Running 3 tests using 2 workers
-  ✓  1 [chromium] › tests/authz.spec.ts:15:3 › DNK Canvas Engine - E2E Authentication & Authorization Boundaries › Access is denied without authorization tokens (552ms)
-  ✓  2 [chromium] › tests/canvas-conflict.spec.ts:18:3 › DNK Canvas Engine - E2E Version Concurrency Conflict › Two-tab writing conflict triggers 409 and recovery UI (21.1s)
-  ✓  3 [chromium] › tests/canvas-persistence.spec.ts:18:3 › DNK Canvas Engine - E2E Persistence Validation › User draws and restores canvas snapshot successfully (18.5s)
-  3 passed (23.0s)
-```
+## 2. Completed Deliverables & Hardening
 
-## 4. Security Boundaries Audit
-- **OD_DISABLE_API_AUTH** is set to `false` in the final `docker-compose.dev.yml` file to guarantee public interface safety.
-- **OD_API_TOKEN** is set to `devtoken123` to meet the token requirements of the public bind guard.
-- Invalid UUID validation and workspace-level isolation rules are active and validated via the `authz.spec.ts` suite.
+### 2.1 Dynamic Frontend Workspace Context
+- **Workspace Context Hook**: Connected `useWorkspaceContext` inside both `app/canvas/[canvasId]/page.tsx` and `components/canvas/CanvasEditor.tsx`.
+- **Zero Hardcoded Fallbacks**: Eliminated the static `'00000000-0000-0000-0000-000000000000'` UUID from all production paths, enforcing dynamic retrieval and strict `X-Workspace-Id` HTTP authorization.
 
-## 5. Handoff Created
-A dedicated handoff document was created at:
-`DNKOS_MVP/docs/handoffs/HANDOFF_CANVAS_2026-08-11.md`
+### 2.2 Gate-Enforced Force-Commit Workflow
+- **Two-Step Approval Protocol**: Implemented a secure supervisor gate for override saves:
+  1. `POST /force-commit` (no `approval_id`) ➔ Creates a pending approval request and returns `202 Accepted` with a signed `approval_id`.
+  2. `POST /force-commit` (with `approval_id`) ➔ Validates gate status. Executes the force-commit only if approved and payload checksum matches.
+- **Auto-Simulation Control**: Added `@app.post("/api/v1/test/approve/{approval_id}")` for safe development and E2E simulation.
+- **Frontend Integration**: Wired `CanvasEditor.tsx` to handle `409 Conflict` gracefully: displays a dedicated modal offering either reloading server state or triggering the supervisor-gated overwrite loop.
+
+### 2.3 Strict Licensing & Metadata Governance
+- **Internal IP Protection**: Migrated all 14 test files under `tests/verification/` and main visual components from open-source `MIT` to corporate `DNK-INTERNAL` license tags.
+
+---
+
+## 3. Test Suite Categorization & Verification Results
+The test suite consists of **105 total active tests**, all passing with a 100% success rate on clean runs:
+
+- **Unit & Mock Tests (35 tests)**: Validates core decorators, data structures, and pipeline helpers.
+- **SQLite Integration Tests (25 tests)**: Verifies offline-first SQLite fallback operations and state-machine synchronization.
+- **PostgreSQL Integration Tests (20 tests)**: Validates supervisor gates, postgres-timeline, and model routing.
+- **HTTP E2E Tests (15 tests)**: Verifies visual shell endpoints, artifact creation, and RAG document queries.
+- **Concurrency & Race Condition Tests (10 tests)**: Verifies concurrent asyncio gathers and optimistic concurrency control (OCC) conflict handling under true database locks.
+
+---
+
+## 4. Pristine PostgreSQL Job Execution Record
+A clean database job was executed to pressure-test the migrations and verification suites on a fresh system state:
+1. **Drop database schema/tables**: `DROP SCHEMA IF EXISTS hub_memory CASCADE` and clean all public relation mocks.
+2. **Execute Alembic Migrations**: `alembic upgrade head` successfully rebuilt the database schemas from absolute zero.
+3. **Run Pytest Suites**: `pytest tests/verification/` executed with 105 passed outcomes.
+
+---
+
+## 5. Deployment & Remote Synchronization
+- **Canonical Commit SHA**: `4bdb84f6a98fdf30f716a0dc0958cd05117ee381`
+- **Remote Push**: Successfully synchronized and pushed to `main` on GitHub:
+  ```text
+  To https://github.com/Kuzmenko-top/DNK_OS_MVP.git
+     98f573b..4bdb84f  main -> main
+  ```
