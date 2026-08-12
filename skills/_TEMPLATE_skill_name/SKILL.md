@@ -1,6 +1,9 @@
 ---
 name: "_TEMPLATE_skill_name"
 description: "Template skill implementing DNK-SKILL-STD-001 index + recipes."
+version: "1.0.0"
+category: "general"
+assimilated_at: "2026-08-10"
 ---
 
 # 🧬 Template Skill Index (DNK-SKILL-STD-001 Example)

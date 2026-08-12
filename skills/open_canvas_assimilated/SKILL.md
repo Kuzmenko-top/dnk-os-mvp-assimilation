@@ -1,6 +1,9 @@
 ---
 name: "open_canvas_assimilated"
 description: "Assimilated patterns and components from langchain-ai/open-canvas"
+version: "2.0.0"
+category: "research"
+assimilated_at: "2026-08-10"
 ---
 
 # 🌐 Open-Canvas Assimilation Index

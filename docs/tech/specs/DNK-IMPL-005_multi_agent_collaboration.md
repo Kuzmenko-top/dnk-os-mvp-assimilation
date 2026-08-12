@@ -2,7 +2,7 @@
 # mrh_id: "DNK-IMPL-005_multi_agent_collaboration"
 # purpose: "Technical Specification and Documentation for Multi-Agent Collaboration & Self-Healing"
 # author: "DNK-e.com Maksym"
-# license: "MIT"
+# license: "DNK-INTERNAL"
 # status: "Active"
 # version: "1.0.0"
 # updated_at: "2026-08-11"

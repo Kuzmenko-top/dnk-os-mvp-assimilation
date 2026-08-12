@@ -8,7 +8,6 @@
 # version: "1.0.0"
 # updated_at: "2026-08-10"
 # plant_scale: "bush"
-# author: "DNK-e.com Maksym"
 # --- END DNK-MRH-HEADER ---
 
 # 🌿 Кущ: Bush_Web_Component_Reverse_Engineering

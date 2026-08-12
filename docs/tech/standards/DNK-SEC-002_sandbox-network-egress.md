@@ -2,8 +2,8 @@
 # --- DNK-MRH-HEADER ---
 # mrh_id: "DNK-SEC-002_sandbox-network-egress.md"
 # purpose: "Establish Network Policy and Host Protection Configurations for DNK OS Sandboxes."
-# author: "DNK-e.com Maksym"
-# license: "MIT"
+# author: "Maxim"
+# license: "DNK-INTERNAL"
 # status: "Active"
 # version: "1.0.0"
 # updated_at: "2026-08-10"

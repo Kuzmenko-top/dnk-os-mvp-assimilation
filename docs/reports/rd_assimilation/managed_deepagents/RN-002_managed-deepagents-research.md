@@ -2,7 +2,7 @@
 # --- DNK-MRH-HEADER ---
 # mrh_id: "RN-002_managed-deepagents-research.md"
 # purpose: "Verify research, claims, and file alignments for langchain-ai/managed-deepagents."
-# author: "DNK-e.com Maksym"
+# author: "Maxim"
 # license: "MIT"
 # status: "Active"
 # version: "1.0.0"

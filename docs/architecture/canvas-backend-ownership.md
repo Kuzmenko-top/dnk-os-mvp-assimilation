@@ -3,8 +3,8 @@
 # purpose: "Архітектурний розподіл відповідальності (Backend Ownership) між Express та FastAPI для Canvas Engine."
 # canonical_source: true
 # status: "Active"
-# version: "2.0.0"
-# updated_at: "2026-08-11"
+# version: "1.0.0"
+# updated_at: "2026-08-10"
 # author: "DNK-e.com Maksym"
 # license: "DNK-INTERNAL"
 # --- END DNK-MRH-HEADER ---
@@ -92,5 +92,5 @@ FastAPI є **Core Orchestrator**:
 > 3. **FastAPI owns canonical persistence API**:
 >    All permanent data modifications and element state persistence must eventually live on the FastAPI endpoints.
 > 
-> 4. **Production PostgreSQL migration: DNK Canvas Engine Gate 3 — PASSED**:
->    The automatic DB migration scripts (Alembic) to port the local Excalidraw element snapshots, design runs, and audit logs into PostgreSQL tables are fully completed and verified. PostgreSQL is active as the canonical production database layer with full optimistic concurrency, revision history, and audit trail.
+> 4. **Production PostgreSQL migration: NOT DONE**:
+>    The automatic DB migration scripts (Alembic) to port the local Excalidraw element snapshots, design runs, and audit logs into PostgreSQL tables are **NOT DONE**. The local SQLite file store currently acts as the single active persistence engine for this local pre-release slice.

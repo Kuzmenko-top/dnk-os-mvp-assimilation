@@ -14,8 +14,8 @@ tags:
 # --- DNK-MRH-HEADER ---
 # mrh_id: "DNKOS_MVP/docs/tasks/05_Flowers/Flower_19_Infinite_Canvas_LangGraph_Runtime_Bridge.md"
 # purpose: "Task Flower tracking Infinite Canvas ↔ LangGraph Runtime Bridge implementation"
-# author: "DNK-e.com Maksym"
-# license: "MIT"
+# author: "Maxim"
+# license: "DNK-INTERNAL"
 # canonical_source: true
 # alters_files: []
 # triggers_tasks: []

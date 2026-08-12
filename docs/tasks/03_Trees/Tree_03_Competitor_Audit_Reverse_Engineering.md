@@ -8,7 +8,6 @@
 # version: "1.0.0"
 # updated_at: "2026-08-10"
 # plant_scale: "tree"
-# author: "DNK-e.com Maksym"
 # --- END DNK-MRH-HEADER ---
 
 # 🌳 Дерево Задачі 03: Competitor Audit & Reverse Engineering Service

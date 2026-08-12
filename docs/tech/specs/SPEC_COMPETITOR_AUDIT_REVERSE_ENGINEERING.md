@@ -7,8 +7,8 @@
 # status: "Draft"
 # version: "1.0.0"
 # updated_at: "2026-08-10"
-# author: "DNK Maksym"
-# license: "MIT"
+# author: "Maxim"
+# license: "DNK-INTERNAL"
 # --- END DNK-MRH-HEADER ---
 
 # 🧬 System Specification: DNK OS Competitor Audit & Reverse Engineering Service (`dnk-audit-rev-eng`)

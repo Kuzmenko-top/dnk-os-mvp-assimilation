@@ -15,7 +15,7 @@ tags:
 # mrh_id: "DNKOS_MVP/docs/tasks/03_Trees/Tree_10_LangGraph_Multi_Agent_Orchestration.md"
 # purpose: "Epic Tree document coordinating stateful multi-agent executions, checkpoints, and self-healing"
 # author: "DNK-e.com Maksym"
-# license: "MIT"
+# license: "DNK-INTERNAL"
 # canonical_source: true
 # alters_files: []
 # triggers_tasks: []

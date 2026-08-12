@@ -8,7 +8,6 @@
 # version: "1.0.0"
 # updated_at: "2026-08-09"
 # plant_scale: "flower"
-# author: "DNK-e.com Maksym"
 # --- END DNK-MRH-HEADER ---
 
 # 🌸 Квітка 08: Create Long-term Cognitive Memory SCONES, Model Router and Context Compactor

@@ -1,8 +1,8 @@
 # --- DNK-MRH-HEADER ---
 # mrh_id: "DNKOS_MVP/docs/tech/standards/DNK-SEC-006_crewai-execution-sandbox.md"
 # purpose: "Security Standards and Sandbox Egress Controls for crewAI-style Orchestrations"
-# author: "DNK-e.com Maksym"
-# license: "MIT"
+# author: "Maxim"
+# license: "DNK-INTERNAL"
 # canonical_source: true
 # alters_files: []
 # triggers_tasks: []

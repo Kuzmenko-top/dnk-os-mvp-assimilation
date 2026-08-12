@@ -2,7 +2,7 @@
 mrh_id: "dnk_impl_002_security_gate"
 purpose: "Technical specification and documentation of Security Gate Policy and Decorator framework"
 author: "DNK-e.com Maksym"
-license: "MIT"
+license: "DNK-INTERNAL"
 status: "Active"
 version: "1.0.0"
 updated_at: "2026-08-11"

@@ -7,7 +7,6 @@
 # status: "Active"
 # version: "1.0.0"
 # updated_at: "2026-08-09"
-# author: "DNK-e.com Maksym"
 # --- END DNK-MRH-HEADER ---
 
 # 🧬 Local Telemetry System Specification (DNKOS_MVP 0.1.0)

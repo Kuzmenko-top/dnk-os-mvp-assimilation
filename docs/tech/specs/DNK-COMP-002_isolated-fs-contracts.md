@@ -2,8 +2,8 @@
 # --- DNK-MRH-HEADER ---
 # mrh_id: "DNK-COMP-002_isolated-fs-contracts.md"
 # purpose: "Establish Type-Safe Interfaces and Error Contracts for Isolated Filesystems."
-# author: "DNK-e.com Maksym"
-# license: "MIT"
+# author: "Maxim"
+# license: "DNK-INTERNAL"
 # status: "Active"
 # version: "1.0.0"
 # updated_at: "2026-08-10"

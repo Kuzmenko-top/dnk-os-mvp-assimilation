@@ -7,7 +7,6 @@
 # status: "Active"
 # version: "1.0.0"
 # updated_at: "2026-08-09"
-# author: "DNK-e.com Maksym"
 # --- END DNK-MRH-HEADER ---
 
 # 📊 Офіційний Звіт Виконаного Циклу: High-Tech Cart Drawer & Nova Poshta Proxy

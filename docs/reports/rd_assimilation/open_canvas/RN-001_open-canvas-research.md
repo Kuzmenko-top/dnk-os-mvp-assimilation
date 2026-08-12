@@ -7,7 +7,7 @@
 # status: "Active"
 # version: "2.0.0"
 # updated_at: "2026-08-10"
-# author: "DNK Maksym"
+# author: "Maxim"
 # license: "MIT"
 # --- END DNK-MRH-HEADER ---
 

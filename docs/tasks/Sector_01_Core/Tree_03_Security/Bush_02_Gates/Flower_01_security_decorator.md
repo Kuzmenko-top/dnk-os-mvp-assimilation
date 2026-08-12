@@ -3,7 +3,7 @@
 ## 📋 Метадані
 ---
 mrh_id: "docs/tasks/Sector_01_Core/Tree_03_Security/Bush_02_Gates/Flower_01_security_decorator.md"
-author: "DNK-e.com Maksym"
+author: "Maxim"
 license: "DNK-INTERNAL"
 source_type: "competitor_observation"
 source_reference: "crewai/002-crewai-approval-gate.png"

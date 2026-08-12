@@ -3,7 +3,7 @@
 ## 📋 Метадані
 ---
 mrh_id: "docs/research/competitors/insights/INSIGHT_XX.md"
-author: "DNK-e.com Maksym"
+author: "Maxim"
 license: "DNK-INTERNAL"
 source_type: "competitor_observation"
 source_reference: "competitor_a/001-dashboard.png" # або лінк на аналіз

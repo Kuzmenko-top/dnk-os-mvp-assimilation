@@ -6,8 +6,8 @@ canonical_source: true
 status: "Active"
 version: "1.1.0"
 updated_at: "2026-08-10"
-author: "DNK-e.com Maksym"
-license: "MIT"
+author: "Maxim"
+license: "DNK-INTERNAL"
 ---
 
 # 🧬 R&D Assimilation Reference: Managed Deep Agents & Blueprint v1.1 Hygiene (2026-08-10)

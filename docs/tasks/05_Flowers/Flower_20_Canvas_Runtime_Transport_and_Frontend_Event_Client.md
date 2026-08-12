@@ -15,7 +15,7 @@ tags:
 # mrh_id: "DNKOS_MVP/docs/tasks/05_Flowers/Flower_20_Canvas_Runtime_Transport_and_Frontend_Event_Client.md"
 # purpose: "Task Flower tracking Canvas Runtime Transport & Frontend Event Client implementation (Flower 20)"
 # author: "DNK-e.com Maksym"
-# license: "MIT"
+# license: "DNK-INTERNAL"
 # canonical_source: true
 # alters_files: []
 # triggers_tasks: []

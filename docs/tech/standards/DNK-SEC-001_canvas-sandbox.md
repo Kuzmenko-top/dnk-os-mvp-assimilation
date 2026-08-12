@@ -7,8 +7,8 @@
 # status: "Active"
 # version: "2.0.0"
 # updated_at: "2026-08-10"
-# author: "DNK Maksym"
-# license: "MIT"
+# author: "Maxim"
+# license: "DNK-INTERNAL"
 # --- END DNK-MRH-HEADER ---
 
 # 🛡️ SECURITY SPEC: CANVAS & AGENT RUNTIME SECURITY (DNK-SEC-001)

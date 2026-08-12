@@ -2,8 +2,8 @@
 # --- DNK-MRH-HEADER ---
 # mrh_id: "DNK-ARCH-002_agent-sandbox-runtime.md"
 # purpose: "Define Sandbox Architecture, Code Lifecycles, and Communication Protocols for DNK OS."
-# author: "DNK-e.com Maksym"
-# license: "MIT"
+# author: "Maxim"
+# license: "DNK-INTERNAL"
 # status: "Active"
 # version: "1.0.0"
 # updated_at: "2026-08-10"

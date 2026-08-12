@@ -1,6 +1,9 @@
 ---
 name: "dnk-task-graph-manager"
 description: "DNK OS Task Graph Manager and Execution Cycle Auto-Reporter"
+version: "2.0.0"
+category: "general"
+assimilated_at: "2026-08-10"
 ---
 
 # 🌐 Task Graph & Reporting Assimilation Index

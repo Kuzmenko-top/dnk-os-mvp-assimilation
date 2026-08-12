@@ -2,7 +2,7 @@
 mrh_id: "dnk_impl_001_timeline_db"
 purpose: "Technical specification and documentation of PostgreSQL-first Timeline DB"
 author: "DNK-e.com Maksym"
-license: "MIT"
+license: "DNK-INTERNAL"
 status: "Active"
 version: "1.0.0"
 updated_at: "2026-08-11"
