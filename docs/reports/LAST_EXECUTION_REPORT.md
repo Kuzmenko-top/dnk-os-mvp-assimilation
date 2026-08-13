@@ -1,49 +1,92 @@
 # --- DNK-MRH-HEADER ---
-# mrh_id: "LAST_EXECUTION_REPORT"
-# purpose: "Technical report for Antigravity AI regarding Pull Request #1 update with full implementation diff"
+# mrh_id: "LAST_EXECUTION_REPORT.md"
+# purpose: "Technical report for Antigravity AI detailing the successful database migration for Security Gates Stage 1"
 # author: "DNK-e.com Maksym"
 # license: "MIT"
-# status: "Active"
-# version: "1.1.0"
-# updated_at: "2026-08-14"
+# status: "Completed"
+# version: "1.0.0"
+# updated_at: "2026-08-13"
 # --- END DNK-MRH-HEADER ---
 
-# Execution Report: PR #1 Update for Agent Plugins 1.0 (DNK-ASSIM-012)
+# Technical Execution Report: Security Gates — Stage 1 (Alembic Migration)
 
-## Executive Summary
-- **Task ID:** DNK-ASSIM-012
-- **Action:** Updated Pull Request #1 with full implementation diff containing core contracts, plugin adapters, manifests, skills, and verification tests.
-- **Repository:** `Kuzmenko-top/dnk-os-mvp-assimilation`
-- **PR URL:** `https://github.com/Kuzmenko-top/dnk-os-mvp-assimilation/pull/1`
+## 📌 Executive Summary
+Alembic migration has been successfully created, tested, and executed for the **Security Gates Stage 1 (Database Schema)**. The tables `security_approvals` and `security_audit_logs` have been physically created and verified in the PostgreSQL instance.
 
-## PR Artifacts & Status
-- **Branch:** `mentor/plugins/DNK-ASSIM-012-agent-plugins-spec`
-- **Head Commit SHA:** `1080274b510e5b0aca075a74f46d034c01e28306`
-- **PR Status:** `OPEN`
-- **CI Checks:** `PASSED` (`validate` workflow completed in 6s)
-- **Total Changed Files:** `12` (+569 / -2)
+**Commit SHA**: `728f9ad424fef4381bb8faa9841371412328bbcc`
+**Migration Revision**: `security_gates_001` (Down-revision: `2b3c4d5e6f7a`)
 
-## Changed Files in PR Diff
-1. `core/plugins/plugin_base.py`
-2. `core/plugins/plugin_manager.py`
-3. `plugins/slack_plugin/plugin.py`
-4. `plugins/slack_plugin/plugin.json`
-5. `plugins/slack_plugin/mcp.json`
-6. `plugins/slack_plugin/skills/slack_messaging/SKILL.md`
-7. `plugins/notion_plugin/plugin.py`
-8. `plugins/notion_plugin/plugin.json`
-9. `plugins/notion_plugin/mcp.json`
-10. `plugins/notion_plugin/skills/notion_documents/SKILL.md`
-11. `tests/verification/test_agent_plugins_spec.py`
-12. `docs/reports/DNK-ASSIM-012_handoff.md`
+---
 
-## Verification Results
-- `pytest -v tests/verification/test_agent_plugins_spec.py` — 13 passed (100%)
-- `pytest -v tests/verification/test_path_hygiene.py` — 1 passed (100%)
-- `git diff --check` — 0 errors (clean)
-- `export-assimilation.sh` — passed
+## 🏗️ Created Schema Details
 
-## Rules Complied
-- `main` branch preserved (no force-push performed on main)
-- `mentor/plugins/DNK-ASSIM-012-agent-plugins-spec` branch reused (no new branch created)
-- No merge executed on PR #1
+### 1. Table: `security_approvals`
+Acts as the central approval store mapping run executions, agent triggers, action hashes, and authorization status.
+*   `id` (`UUID`, PK)
+*   `run_id` (`UUID`, non-nullable)
+*   `agent_id` (`VARCHAR(255)`, non-nullable)
+*   `action_name` (`VARCHAR(255)`, non-nullable)
+*   `args_hash` (`VARCHAR(64)`, non-nullable) - SHA-256 action arguments fingerprint
+*   `idempotency_key` (`VARCHAR(64)`, unique, nullable)
+*   `status` (`ENUM('pending', 'approved', 'rejected', 'timeout_rejected')`, default: `'pending'`)
+*   `approved_by` (`VARCHAR(255)`, nullable)
+*   `approved_at` (`TIMESTAMP`, nullable)
+*   `timeout_at` (`TIMESTAMP`, non-nullable)
+*   `created_at` (`TIMESTAMP`, server_default: `NOW()`)
+*   `updated_at` (`TIMESTAMP`, server_default: `NOW()`, onupdate: `NOW()`)
+
+**Indices**:
+*   `idx_approvals_run_action` (`run_id`, `action_name`)
+*   `idx_approvals_idempotency` (`idempotency_key`)
+
+### 2. Table: `security_audit_logs`
+Stores the high-fidelity audit trail for security checks and policy validations.
+*   `id` (`UUID`, PK)
+*   `approval_id` (`UUID`, Foreign Key to `security_approvals.id`)
+*   `event_type` (`VARCHAR(50)`, non-nullable)
+*   `event_payload` (`JSONB`, nullable)
+*   `timestamp` (`TIMESTAMP`, server_default: `NOW()`)
+
+**Indices**:
+*   `idx_audit_approval` (`approval_id`)
+
+---
+
+## 🧪 Verification Log & Cycle Tests
+
+1.  **Upstream Head Check**:
+    ```bash
+    uv run alembic -c services/dnk_canvas_api/alembic.ini current
+    # Output: 2b3c4d5e6f7a
+    ```
+2.  **Upgrade Execution**:
+    ```bash
+    uv run alembic -c services/dnk_canvas_api/alembic.ini upgrade head
+    # Output: Running upgrade 2b3c4d5e6f7a -> security_gates_001, Create security_gates tables
+    ```
+3.  **Downgrade Resiliency Check**:
+    ```bash
+    uv run alembic -c services/dnk_canvas_api/alembic.ini downgrade -1
+    # Output: Running downgrade security_gates_001 -> 2b3c4d5e6f7a, Create security_gates tables
+    ```
+    *PostgreSQL Clean-up Verification:* Custom enum type `security_approval_status` successfully dropped inside the `downgrade` block to prevent duplicate type creation errors on subsequent runs.
+4.  **Final Upgrade**:
+    ```bash
+    uv run alembic -c services/dnk_canvas_api/alembic.ini upgrade head
+    # Output: Upgraded to security_gates_001 (head)
+    ```
+5.  **PostgreSQL Verification**:
+    ```sql
+    docker exec dnk-db psql -U postgres -d dnk_hub -c "\dt security_*"
+                List of relations
+     Schema |        Name         | Type  |  Owner   
+    --------+---------------------+-------+----------
+     public | security_approvals  | table | postgres
+     public | security_audit_logs | table | postgres
+    ```
+
+---
+
+## 📂 Active File Offsets
+*   **Alembic Target path**: `DNKOS_MVP/services/dnk_canvas_api/alembic/versions/security_gates_001_security_tables.py`
+*   **Requested path**: `DNKOS_MVP/migrations/versions/security_gates_001_security_tables.py`
