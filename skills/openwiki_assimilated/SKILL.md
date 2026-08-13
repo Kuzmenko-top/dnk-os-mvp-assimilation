@@ -1,9 +1,13 @@
 ---
-name: "openwiki_assimilated"
-description: "Assimilated wiki-graph memory and markdown-sync from langchain-ai/openwiki"
-version: "2.0.0"
-category: "research"
-assimilated_at: "2026-08-10"
+name: openwiki_assimilated
+description: Assimilated wiki-graph memory and markdown-sync from langchain-ai/openwiki
+version: 2.0.0
+category: research
+assimilated_at: '2026-08-10'
+triggers:
+- openwiki assimilated
+- use openwiki assimilated
+author: DNK-e.com Maksym
 ---
 
 # 🌐 OpenWiki Assimilation Index

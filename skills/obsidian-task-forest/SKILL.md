@@ -1,9 +1,14 @@
 ---
-name: "obsidian-task-forest"
-description: "Obsidian Task Forest Markdown formatting, YAML headers, and bottom-up progress synchronization."
-version: "2.0.0"
-category: "general"
-assimilated_at: "2026-08-10"
+name: obsidian-task-forest
+description: Obsidian Task Forest Markdown formatting, YAML headers, and bottom-up
+  progress synchronization.
+version: 2.0.0
+category: general
+assimilated_at: '2026-08-10'
+triggers:
+- obsidian task forest
+- use obsidian task forest
+author: DNK-e.com Maksym
 ---
 
 # 🌐 Obsidian Task Forest Index

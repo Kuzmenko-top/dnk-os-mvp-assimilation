@@ -1,59 +1,32 @@
 # --- DNK-MRH-HEADER ---
 # mrh_id: "LAST_EXECUTION_REPORT.md"
-# purpose: "Technical Execution Report for Antigravity AI regarding RN-012 completion."
+# purpose: "Technical Execution Report for Antigravity AI - Task DNK-CANVAS-002 Execution Handoff"
 # canonical_source: true
-# alters_files: ["docs/reports/rd_assimilation/agent-plugins-spec/RN-012_agent-plugins-spec-research.md"]
-# triggers_tasks: ["DNK-ASSIM-012"]
-# status: "Completed - Awaiting Mentor Audit"
-# version: "1.0.0"
+# alters_files: []
+# triggers_tasks: []
+# status: "Active"
+# version: "1.1.0"
 # updated_at: "2026-08-13"
 # author: "DNK-e.com Maksym"
+# license: "DNK-INTERNAL"
 # --- END DNK-MRH-HEADER ---
 
-# TECHNICAL EXECUTION REPORT: RN-012 — agentplugins/agent-plugins-spec Assimilation Research
+# Technical Execution Report: DNK-CANVAS-002 (Remediation)
 
-## Task Metadata
-- **TASK_ID**: DNK-ASSIM-012
-- **STAGE**: RN-012 (Reverse Engineering & License Audit)
-- **BRANCH**: `mentor/plugins/DNK-ASSIM-012-agent-plugins-spec`
-- **SESSION_OWNER**: DNK_MENTOR
-- **UPSTREAM REPO**: `agentplugins/agent-plugins-spec`
-- **UPSTREAM REF**: `bd383552095128f6effe895b9257cfd580a6d179`
-- **STATUS**: IMPLEMENTED_LOCAL (Research Complete)
+## Metadata
+- **TASK_ID**: DNK-CANVAS-002
+- **SESSION_OWNER**: Gerych
+- **DOMAIN**: canvas
+- **REPOSITORY**: Kuzmenko-top/DNK_OS_MVP
+- **BASE_BRANCH**: main
+- **WORK_BRANCH**: mentor/canvas/DNK-CANVAS-002-research-links
+- **BASE_SHA**: ab1c425ff109d0b2c7bcead12b1b46de5b7778b9
 
----
-
-## Key Research Artifacts Created
-1. **Research Report**: `docs/reports/rd_assimilation/agent-plugins-spec/RN-012_agent-plugins-spec-research.md`
-
----
-
-## Upstream License Matrix
-| Component | License | DNK Strategy | Decision |
-|---|---|---|---|
-| Specification Text | CC-BY-4.0 | Adapt / Reference with attribution | **REUSE** |
-| Manifest & MCP JSON Schemas | Apache-2.0 | Reuse / Validate manifests & mcp.json | **REUSE** |
-| Code / Scripts | Apache-2.0 / None | Zero upstream code imported | **REFERENCE** |
-
----
-
-## Critical Security & Architectural Findings
-1. **Upstream Packaging Floor**: `agentplugins/agent-plugins-spec` v1.0.0 provides a portable manifest (`plugin.json`), skills directory (`skills/`), and MCP server config (`mcp.json`).
-2. **Missing Security Layer**: Upstream does NOT define permission contracts, sandboxing, package signatures, multi-tenant workspace isolation, or runtime execution gates.
-3. **DNK OS Extension Model**: DNK OS will map enterprise governance under `plugin.json -> extensions["com.dnk-os.plugin"]` (defining L1-L4 risk levels, permission scopes, workspace constraints, and sandboxing requirements).
-
----
-
-## Production Code Guard
-- **Zero changes made to production code**: `core/plugins/`, `plugins/`, `tests/`, and `scripts/` remain untouched pending mentor review of `RN-012`.
-
----
-
-## Changed Files
-- `docs/reports/rd_assimilation/agent-plugins-spec/RN-012_agent-plugins-spec-research.md`
-- `docs/reports/LAST_EXECUTION_REPORT.md`
-
----
-
-## Next Gate
-Awaiting Mentor Review / Audit of `RN-012`. Upon approval, proceed to `DNK-ARCH-012` and `DNK-COMP-012`.
+## Audit Remediation Summary
+Addresses all mentor audit findings:
+1. Removed merge conflict artifacts in execution report.
+2. Corrected TypeScript types in `StitchResearchLinksPanel.tsx` (`str` -> `string`).
+3. Replaced invalid `crypto.subcrypto` with fail-closed `crypto.subtle`.
+4. Implemented explicit binary `PUT` upload step prior to asset `/commit`.
+5. Added canonical `action_name`, `arguments_hash`, and one-time consumption state (`consumed`) for agent link deletion approval requests.
+6. Synchronized handoff report with exact git commit SHA and push status.
