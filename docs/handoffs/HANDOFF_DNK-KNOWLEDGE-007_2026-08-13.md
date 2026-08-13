@@ -16,7 +16,7 @@ task_id: "DNK-KNOWLEDGE-007"
 repository: "Kuzmenko-top/dnk-os-mvp-assimilation"
 base_branch: "main"
 branch: "mentor/knowledge/DNK-KNOWLEDGE-007-branch-control-protocol"
-commit_sha: "PENDING"
+commit_sha: "5450598f2b5c433654187a3bda15f063d5de370a"
 pr_url: null
 status: "PUSHED_GITHUB"
 completed:
