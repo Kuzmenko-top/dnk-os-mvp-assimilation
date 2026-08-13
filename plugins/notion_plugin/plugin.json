@@ -1,0 +1,9 @@
+{
+  "name": "notion",
+  "version": "1.0.0",
+  "extension_id": "com.dnk-os.plugin.notion",
+  "publisher": "DNK-e.com Maksym",
+  "description": "Notion plugin adapter for DNK OS",
+  "main": "plugin.py",
+  "capabilities": ["tools", "event_handlers"]
+}

@@ -1,0 +1,9 @@
+{
+  "name": "slack",
+  "version": "1.0.0",
+  "extension_id": "com.dnk-os.plugin.slack",
+  "publisher": "DNK-e.com Maksym",
+  "description": "Slack plugin adapter for DNK OS",
+  "main": "plugin.py",
+  "capabilities": ["tools", "event_handlers"]
+}

@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "slack": {
+      "command": "node",
+      "args": ["slack-mcp-server.js"],
+      "transport": "stdio",
+      "sandboxed": true
+    }
+  }
+}

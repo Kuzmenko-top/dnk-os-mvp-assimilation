@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "notion": {
+      "command": "node",
+      "args": ["notion-mcp-server.js"],
+      "transport": "stdio",
+      "sandboxed": true
+    }
+  }
+}
