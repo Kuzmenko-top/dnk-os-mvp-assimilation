@@ -3,13 +3,13 @@
 # purpose: "Handoff Report for DNK-CANVAS-002 Canvas Research Integration & Entity Linking"
 # canonical_source: true
 # status: "Active"
-# version: "1.0.0"
+# version: "1.1.0"
 # updated_at: "2026-08-13"
 # author: "DNK-e.com Maksym"
 # license: "DNK-INTERNAL"
 # --- END DNK-MRH-HEADER ---
 
-# Execution Handoff: DNK-CANVAS-002
+# Execution Handoff: DNK-CANVAS-002 (Audit Remediation)
 
 ## Identity
 - **TASK_ID**: DNK-CANVAS-002
@@ -23,6 +23,7 @@
 
 ### Changed files
 - `services/dnk_canvas_api/main.py`
+- `services/dnk_canvas_api/core/security/models.py`
 - `visual_shell/open_design/apps/web/src/components/stitch/StitchResearchLinksPanel.tsx`
 - `docs/tasks/05_Flowers/Flower_canvas_research_links.md`
 - `tests/verification/test_canvas_research_links.py`
@@ -36,10 +37,10 @@
 - `projects/` (Product Workspace intact)
 
 ## Verification
-- **Unit & Integration tests**: 6 passed in `tests/verification/test_canvas_research_links.py`, 32 passed in `services/dnk_canvas_api/tests/`
-- **Exact command**: `/Users/kuzmenko.top/Kuzmenko/MY_LIFE_WORK/DNK_HUB/DNKOS_MVP/.venv/bin/pytest tests/verification/test_canvas_research_links.py`
+- **Unit & Integration tests**: 6 passed in `tests/verification/test_canvas_research_links.py`, 29 passed in `services/dnk_canvas_api/tests/`
+- **Exact command**: `/Users/<username>/Kuzmenko/MY_LIFE_WORK/DNK_HUB/DNKOS_MVP/.venv/bin/pytest tests/verification/test_canvas_research_links.py`
 - **Database**: PostgreSQL schema `hub_memory` with dual partial unique indexes for `element_id IS NOT NULL` / `element_id IS NULL`
-- **Runtime environment**: Python 3.14 + FastAPI + SQLAlchemy + Alembic
+- **Runtime environment**: Python 3.14 + FastAPI + SQLAlchemy + Alembic + Web Crypto (window.crypto.subtle)
 
 ## Git
 - **Branch**: `mentor/canvas/DNK-CANVAS-002-research-links`
@@ -57,6 +58,9 @@
 
 ## Handoff
 - **Report path**: `docs/handoffs/HANDOFF_DNK-CANVAS-002_2026-08-13.md`
-- **Known risks**: None remaining. S3/MinIO upload presign & commit verified with MIME/size checks and Supervisor approval gate contract.
+- **Known risks**:
+  - Web Crypto API (`window.crypto.subtle`) browser availability requirement
+  - Live MinIO/S3 S3Adapter fixture mode vs production S3 credentials
+  - Supervisor approval gate one-time consumption (`status = "consumed"`)
 - **Dependencies**: None.
-- **Next action**: Await mentor audit on branch `mentor/canvas/DNK-CANVAS-002-research-links`.
+- **Next action**: Re-request mentor audit on branch `mentor/canvas/DNK-CANVAS-002-research-links`.

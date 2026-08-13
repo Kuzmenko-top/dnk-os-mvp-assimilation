@@ -4,7 +4,7 @@
 # author: "DNK-e.com Maksym"
 # license: "MIT"
 # status: "Active"
-# version: "1.0.0"
+# version: "1.1.0"
 # updated_at: "2026-08-13"
 # --- END DNK-MRH-HEADER ---
 
@@ -39,8 +39,10 @@
 - `tests/verification/test_path_hygiene.py` - 1/1 PASS
 - **Total:** 13/13 PASS
 
-## Status
-- **Status:** `TESTED_LOCAL`
+## Status & PR
+- **Push status:** `PUSHED_GITHUB` / `PR_READY`
+- **Commit SHA:** `7ac6ccf714df7d1247c2cdf2258f88867cfa3ccd`
+- **PR Link:** https://github.com/Kuzmenko-top/DNK_OS_MVP/compare/main...mentor/plugins/DNK-ASSIM-012-agent-plugins-spec
 - **Handoff report path:** `docs/reports/DNK-ASSIM-012_handoff.md`
 - **Known risks:** None.
-- **Next action:** Очікування mentor audit
+- **Next action:** Створення та мердж PR на GitHub (`PR_READY`).
