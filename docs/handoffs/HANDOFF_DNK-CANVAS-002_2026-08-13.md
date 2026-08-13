@@ -3,13 +3,13 @@
 # purpose: "Handoff Report for DNK-CANVAS-002 Canvas Research Integration & Entity Linking"
 # canonical_source: true
 # status: "Active"
-# version: "1.1.0"
+# version: "1.2.0"
 # updated_at: "2026-08-13"
 # author: "DNK-e.com Maksym"
 # license: "DNK-INTERNAL"
 # --- END DNK-MRH-HEADER ---
 
-# Execution Handoff: DNK-CANVAS-002 (Audit Remediation)
+# Execution Handoff: DNK-CANVAS-002 (Remediated)
 
 ## Identity
 - **TASK_ID**: DNK-CANVAS-002
@@ -40,12 +40,12 @@
 - **Unit & Integration tests**: 6 passed in `tests/verification/test_canvas_research_links.py`, 29 passed in `services/dnk_canvas_api/tests/`
 - **Exact command**: `/Users/<username>/Kuzmenko/MY_LIFE_WORK/DNK_HUB/DNKOS_MVP/.venv/bin/pytest tests/verification/test_canvas_research_links.py`
 - **Database**: PostgreSQL schema `hub_memory` with dual partial unique indexes for `element_id IS NOT NULL` / `element_id IS NULL`
-- **Runtime environment**: Python 3.14 + FastAPI + SQLAlchemy + Alembic + Web Crypto (window.crypto.subtle)
+- **Runtime environment**: Python 3.14 + FastAPI + SQLAlchemy + Alembic + Web Crypto (`window.crypto.subtle`)
 
 ## Git
 - **Branch**: `mentor/canvas/DNK-CANVAS-002-research-links`
-- **Commit SHA**: (pending local commit)
-- **Push status**: (pending push to origin/mentor/canvas/DNK-CANVAS-002-research-links)
+- **Commit SHA**: 9d974e449b68da183d4026bc8e586b79b49027a0
+- **Push status**: PUSHED (origin/mentor/canvas/DNK-CANVAS-002-research-links)
 - **PR status**: PR_READY for mentor audit
 
 ## Status
@@ -60,7 +60,7 @@
 - **Report path**: `docs/handoffs/HANDOFF_DNK-CANVAS-002_2026-08-13.md`
 - **Known risks**:
   - Web Crypto API (`window.crypto.subtle`) browser availability requirement
-  - Live MinIO/S3 S3Adapter fixture mode vs production S3 credentials
-  - Supervisor approval gate one-time consumption (`status = "consumed"`)
+  - Production S3/MinIO bucket configuration vs local fixture upload endpoint
+  - Supervisor approval gate one-time consumption
 - **Dependencies**: None.
 - **Next action**: Re-request mentor audit on branch `mentor/canvas/DNK-CANVAS-002-research-links`.
