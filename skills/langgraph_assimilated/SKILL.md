@@ -1,44 +1,44 @@
 ---
 name: "langgraph_assimilated"
-description: "SOTA indices and recipes for LangGraph stateful multi-agent loops and MCP adapters"
-version: "2.1.0"
-category: "orchestration"
-author: "DNK-e.com Maksym"
-triggers:
-  - "langgraph"
-  - "stateful graph loop"
-  - "mcp adapter graph"
-  - "cyclic agent orchestrator"
-inputs_schema:
-  type: "object"
-  properties:
-    messages: {type: "array"}
-    thread_id: {type: "string"}
-outputs_schema:
-  type: "object"
-  properties:
-    final_state: {type: "object"}
+description: "SOTA indices and recipes for LangGraph stateful multi-agent loops and MCP adapters."
 ---
 
-# 🕸️ LangGraph & MCP Assimilation Skill
+# 🕸️ LangGraph & MCP Assimilation Index
 
-## Overview
-Meta-index and operational guide for configuring stateful graph execution loops, thread-based checkpointing, and dynamic Model Context Protocol (MCP) tool adapters.
+Meta-index tracking stateful loops, checkpointing, and MCP-routing.
 
-## Core Specifications
-1. **[Research & Evidence Trail](../../docs/reports/rd_assimilation/langgraph/RN-004_langgraph-research.md)**
-2. **[Stateful Graph Architecture](../../docs/tech/specs/DNK-ARCH-005_langgraph-multi-agent-orchestrator.md)**
-3. **[Component State Contracts](../../docs/tech/specs/DNK-COMP-005_langgraph-state-contracts.md)**
-4. **[Sandbox Execution Security](../../docs/tech/standards/DNK-SEC-005_langgraph-execution-sandbox.md)**
+## 📁 Core Specifications
 
-## Intent & Triggers
-- Prompt triggers: `"langgraph"`, `"stateful graph loop"`, `"mcp adapter graph"`, `"cyclic agent orchestrator"`.
-- Activates when building cyclic agent loops or routing complex multi-step workflows.
+1. **[Research & Evidence Trail](./references/RN-004_langgraph-research.md)**
+   - Analysis of `langgraph` and `langchain-mcp-adapters` for DNK OS Core.
 
-## Quick Recipes & Execution Flow
+2. **[Stateful Graph Architecture](./references/DNK-ARCH-005_langgraph-multi-agent-orchestrator.md)**
+   - Loop and cyclic flow orchestration with centralized shared state.
+
+3. **[Component State Contracts](./references/DNK-COMP-005_langgraph-state-contracts.md)**
+   - Type-safe Python Pydantic ports, TypedDict schemas, and reducer definitions.
+
+4. **[Sandbox Execution Security](./references/DNK-SEC-005_langgraph-execution-sandbox.md)**
+   - Safe isolated container routing, loop caps, and resource limits.
+
+## 📁 Structure
+
+- `scripts/` — скрипти для роботи з графами (створення, запуск, MCP).
+- `examples/` — приклади multi-agent флоу (research → plan → execute → review).
+- `references/` — приклади артефактів (графи, стейт-моделі, інтеграції).
+- `resources/` — додаткові матеріали, посилання, діаграми.
+
+Основна документація:
+- [RN-004](../../docs/reports/rd_assimilation/langgraph/RN-004_langgraph-research.md)
+- [DNK-ARCH-005](../../docs/tech/specs/DNK-ARCH-005_langgraph-multi-agent-orchestrator.md)
+- [DNK-COMP-005](../../docs/tech/specs/DNK-COMP-005_langgraph-state-contracts.md)
+- [DNK-SEC-005](../../docs/tech/standards/DNK-SEC-005_langgraph-execution-sandbox.md)
+
+## 🧪 Quick Recipes
 
 ### Recipe A: Compiling and Running a Stateful Multi-Agent Loop
-- Use adapter contract inside `core/adapters/dnk_langgraph_adapter.py`:
+- Use the adapter contract inside `core/adapters/dnk_langgraph_adapter.py`.
+- Define node handlers, conditional edges, and run state:
   ```python
   from core.adapters.dnk_langgraph_adapter import DNKLangGraphAdapter
   graph = DNKLangGraphAdapter()
@@ -49,8 +49,5 @@ Meta-index and operational guide for configuring stateful graph execution loops,
   ```
 
 ### Recipe B: Mapping MCP Tool Calls in State Nodes
-- Route tools registered in MCP servers dynamically through state nodes.
-
-## Pitfalls & Error Handling
-- **Infinite Cyclic Recursion**: Always enforce max recursion depth limits on graph execution instances.
-- **State Reducer Mutation**: Use immutable state updates or explicit dictionary reducers to avoid concurrency race conditions.
+- Expose registered MCP server tools to active orchestrators.
+- Execute tool call with validation and output merge.

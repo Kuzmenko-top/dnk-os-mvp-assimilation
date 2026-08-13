@@ -1,14 +1,9 @@
 ---
-name: dnk-prime-agent-rlm-assimilation
-description: Recursive Language Model (RLM), Continual Harness, and Smart Compaction
-  from Prime Agent
-version: 2.0.0
-category: devops
-assimilated_at: '2026-08-10'
-triggers:
-- dnk prime agent rlm assimilation
-- use dnk prime agent rlm assimilation
-author: DNK-e.com Maksym
+name: "dnk-prime-agent-rlm-assimilation"
+description: "Recursive Language Model (RLM), Continual Harness, and Smart Compaction from Prime Agent"
+version: "2.0.0"
+category: "devops"
+assimilated_at: "2026-08-10"
 ---
 
 # 🌐 Prime Agent RLM & Harness Assimilation Index

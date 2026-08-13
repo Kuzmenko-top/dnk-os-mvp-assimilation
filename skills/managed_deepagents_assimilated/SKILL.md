@@ -1,13 +1,9 @@
 ---
-name: managed_deepagents_assimilated
-description: SOTA indices and maps for LangChain Managed Deep Agents assimilation.
-version: 1.0.0
-category: research
-assimilated_at: '2026-08-10'
-triggers:
-- managed deepagents assimilated
-- use managed deepagents assimilated
-author: DNK-e.com Maksym
+name: "managed_deepagents_assimilated"
+description: "SOTA indices and maps for LangChain Managed Deep Agents assimilation."
+version: "1.0.0"
+category: "research"
+assimilated_at: "2026-08-10"
 ---
 
 # 🌐 Managed Deep Agents (MDA) Assimilation Index
