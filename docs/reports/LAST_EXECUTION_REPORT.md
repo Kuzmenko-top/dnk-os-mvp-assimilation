@@ -1,39 +1,59 @@
-# TECHNICAL EXECUTION REPORT: TIMELINE LOGGER STAGE 2 REPOSITORY INTERFACE
-
+# --- DNK-MRH-HEADER ---
+# mrh_id: "LAST_EXECUTION_REPORT.md"
+# purpose: "Technical Execution Report for Antigravity AI regarding RN-012 completion."
+# canonical_source: true
+# alters_files: ["docs/reports/rd_assimilation/agent-plugins-spec/RN-012_agent-plugins-spec-research.md"]
+# triggers_tasks: ["DNK-ASSIM-012"]
+# status: "Completed - Awaiting Mentor Audit"
+# version: "1.0.0"
+# updated_at: "2026-08-13"
 # author: "DNK-e.com Maksym"
-# timestamp: "2026-08-13"
-# task_id: "DNK-CORE-001"
-# domain: "core"
-# branch: "mentor/core/DNK-CORE-001-timeline-logger-alembic"
+# --- END DNK-MRH-HEADER ---
 
-## Executive Summary
-Successfully implemented and verified **Timeline Logger Stage 2: Repository Interface** (`DNK-CORE-001`). Created the `TimelineEvent` SQLAlchemy model, `ITimelineRepository` abstract interface, and `PostgreSQLTimelineRepository` async implementation using SQLAlchemy 2.0. Verified via pytest unit tests.
+# TECHNICAL EXECUTION REPORT: RN-012 — agentplugins/agent-plugins-spec Assimilation Research
 
-## Execution Log & Artifacts
-1. **Model Definition**:
-   - File: `DNKOS_MVP/services/dnk_canvas_api/core/security/models.py`
-   - Added `TimelineEvent` mapped to `agent_timeline` table with primary key `id` (UUID), `run_id`, `agent_id`, `event_type`, `status`, `action_name`, `payload_json` (JSONB), `idempotency_key`, and `timestamp`.
-   - Index definitions attached to `__table_args__`.
+## Task Metadata
+- **TASK_ID**: DNK-ASSIM-012
+- **STAGE**: RN-012 (Reverse Engineering & License Audit)
+- **BRANCH**: `mentor/plugins/DNK-ASSIM-012-agent-plugins-spec`
+- **SESSION_OWNER**: DNK_MENTOR
+- **UPSTREAM REPO**: `agentplugins/agent-plugins-spec`
+- **UPSTREAM REF**: `bd383552095128f6effe895b9257cfd580a6d179`
+- **STATUS**: IMPLEMENTED_LOCAL (Research Complete)
 
-2. **Repository Implementation**:
-   - File: `DNKOS_MVP/services/dnk_canvas_api/core/repositories/timeline_repository.py`
-   - Class `ITimelineRepository`: Abstract interface defining `log_action_start`, `log_action_end`, and `get_timeline_by_run`.
-   - Class `PostgreSQLTimelineRepository`: Async implementation taking `AsyncSession`, performing async writes (`add`, `commit`) and queries using `select(TimelineEvent)`.
+---
 
-3. **Unit Tests & Verification**:
-   - File: `DNKOS_MVP/services/dnk_canvas_api/tests/test_timeline_repository.py`
-   - Test cases: `test_log_action_start`, `test_log_action_end`, `test_get_timeline_by_run`.
-   - Execution command: `uv run pytest tests/test_timeline_repository.py -v`
-   - Test Result: 3 passed in 0.21s.
-   - REPL import check: Verified `PostgreSQLTimelineRepository` imports cleanly without syntax or missing dependency errors.
+## Key Research Artifacts Created
+1. **Research Report**: `docs/reports/rd_assimilation/agent-plugins-spec/RN-012_agent-plugins-spec-research.md`
 
-4. **Git Push & Repository Handoff**:
-   - Remote Repository: `https://github.com/Kuzmenko-top/dnk-os-mvp-assimilation.git`
-   - Target Branch: `mentor/core/DNK-CORE-001-timeline-logger-alembic`
-   - Commit SHA: `b5f580674651c84c7e38c5f912295a979e989d37`
-   - Commit URL: `https://github.com/Kuzmenko-top/dnk-os-mvp-assimilation/commit/b5f580674651c84c7e38c5f912295a979e989d37`
-   - Handoff File: `docs/handoffs/HANDOFF_DNK-CORE-001_2026-08-13.md`
+---
 
-## System Status
-- Status: **COMPLETED & VERIFIED**
-- All Definition of Done criteria met for Stage 2.
+## Upstream License Matrix
+| Component | License | DNK Strategy | Decision |
+|---|---|---|---|
+| Specification Text | CC-BY-4.0 | Adapt / Reference with attribution | **REUSE** |
+| Manifest & MCP JSON Schemas | Apache-2.0 | Reuse / Validate manifests & mcp.json | **REUSE** |
+| Code / Scripts | Apache-2.0 / None | Zero upstream code imported | **REFERENCE** |
+
+---
+
+## Critical Security & Architectural Findings
+1. **Upstream Packaging Floor**: `agentplugins/agent-plugins-spec` v1.0.0 provides a portable manifest (`plugin.json`), skills directory (`skills/`), and MCP server config (`mcp.json`).
+2. **Missing Security Layer**: Upstream does NOT define permission contracts, sandboxing, package signatures, multi-tenant workspace isolation, or runtime execution gates.
+3. **DNK OS Extension Model**: DNK OS will map enterprise governance under `plugin.json -> extensions["com.dnk-os.plugin"]` (defining L1-L4 risk levels, permission scopes, workspace constraints, and sandboxing requirements).
+
+---
+
+## Production Code Guard
+- **Zero changes made to production code**: `core/plugins/`, `plugins/`, `tests/`, and `scripts/` remain untouched pending mentor review of `RN-012`.
+
+---
+
+## Changed Files
+- `docs/reports/rd_assimilation/agent-plugins-spec/RN-012_agent-plugins-spec-research.md`
+- `docs/reports/LAST_EXECUTION_REPORT.md`
+
+---
+
+## Next Gate
+Awaiting Mentor Review / Audit of `RN-012`. Upon approval, proceed to `DNK-ARCH-012` and `DNK-COMP-012`.
