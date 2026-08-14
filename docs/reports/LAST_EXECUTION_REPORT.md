@@ -1,47 +1,38 @@
-# Technical Execution Report: DNK-ASSIM-014
+# --- DNK-MRH-HEADER ---
+# mrh_id: "LAST_EXECUTION_REPORT.md"
+# purpose: "Technical Execution Report for Antigravity AI - Task DNK-CANVAS-002 Execution Handoff"
+# canonical_source: true
+# alters_files: []
+# triggers_tasks: []
+# status: "Active"
+# version: "1.2.0"
+# updated_at: "2026-08-13"
+# author: "DNK-e.com Maksym"
+# license: "DNK-INTERNAL"
+# --- END DNK-MRH-HEADER ---
 
-- **Task ID:** DNK-ASSIM-014
-- **Domain:** langchain
-- **Target Branch:** mentor/langchain/DNK-ASSIM-014-langchain
-- **Commit SHA:** 0a72252bcc66f9a1a1a9be8589b17aa9723492c4
-- **Status:** TESTED_LOCAL
+# Technical Execution Report: DNK-CANVAS-002 (Decoupled Traceability)
 
----
+## Metadata
+- **TASK_ID**: DNK-CANVAS-002
+- **SESSION_OWNER**: Gerych
+- **DOMAIN**: canvas
+- **REPOSITORY**: Kuzmenko-top/DNK_OS_MVP
+- **BASE_BRANCH**: main
+- **WORK_BRANCH**: mentor/canvas/DNK-CANVAS-002-research-links
+- **BASE_SHA**: ab1c425ff109d0b2c7bcead12b1b46de5b7778b9
 
-## Executive Summary
-Successfully completed the full assimilation pipeline for `langchain-ai/langchain` into `DNKOS_MVP`. The implementation introduces a Hexagonal Port & Adapter (`DNKLangChainPort` and `DNKLangChainAdapter`) for LangChain Expression Language (LCEL) chains, runnables, prompt formatting, output parsers, and tool bindings, while extending `DNKLangGraphAdapter` with cross-adapter LCEL node integration (`add_lcel_node`).
+## Decoupled Traceability Model
+- **Code Implementation Commits**:
+  - `7f276e1f9e48bf51bb7547d41cb59f25b585831c`
+  - `11e3de01c843047deec1dce1c06bbf7281e113a7`
+- **Audit Baseline Commit**:
+  - `5a95b4aaaad2454f1df32f7a4ca06357c4ae158b`
+- **Push Target**: `origin/mentor/canvas/DNK-CANVAS-002-research-links`
 
----
-
-## Artifacts Delivered
-
-1. **Research Trail (RN-014):**
-   - File: `docs/reports/rd_assimilation/langchain/RN-014_langchain-research.md`
-2. **Architecture Spec (DNK-ARCH-014):**
-   - File: `docs/tech/specs/DNK-ARCH-014_langchain-integration.md`
-3. **Component Contracts (DNK-COMP-014):**
-   - File: `docs/tech/specs/DNK-COMP-014_langchain-contracts.md`
-4. **LangChain Adapter Component:**
-   - File: `core/adapters/dnk_langchain_adapter.py`
-5. **LangGraph Adapter Integration:**
-   - File: `core/adapters/dnk_langgraph_adapter.py`
-6. **Verification Suite:**
-   - File: `tests/verification/test_langchain_adapter.py` (7 tests)
-7. **Assimilation Documentation Spec:**
-   - File: `docs/tech/specs/DNK-ASSIM-014_langchain.md`
-8. **Handoff Report:**
-   - File: `docs/reports/DNK-ASSIM-014_handoff.md`
-
----
-
-## Test Verification
-
-- `pytest tests/verification/test_langchain_adapter.py`: 7/7 PASSED
-- `pytest tests/verification/test_path_hygiene.py`: PASSED
-- `pytest tests/verification/test_langgraph_adapter.py`: 12/12 PASSED
-
----
-
-## Export & Sync
-- Executed `./scripts/export-assimilation.sh`.
-- Specifications synchronized with `dnk-os-mvp-assimilation` repository.
+## Audit Remediation Summary
+1. **P0 Execution Report Integrity**: Removed all merge conflict markers.
+2. **P0 Frontend TypeScript**: Corrected types in `StitchResearchLinksPanel.tsx` (`link_id: string`, `canvas_id: string`). Replaced invalid `crypto.subcrypto` with fail-closed `crypto?.subtle`.
+3. **P1 Asset Binary Upload**: Implemented binary `PUT` upload step prior to asset `/commit`. Added `/api/v1/storage/upload/{asset_id}` endpoint.
+4. **P1 Supervisor Gate Binding & One-Time Consumption**: Added canonical `action_name`, `arguments_hash`, and 403 `APPROVAL_ALREADY_CONSUMED` response on approval reuse.
+5. **Decoupled Traceability**: Separated code implementation commit range from self-referential documentation HEAD SHA.
