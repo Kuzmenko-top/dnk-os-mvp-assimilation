@@ -3,13 +3,13 @@
 # purpose: "Handoff Report for DNK-CANVAS-002 Canvas Research Integration & Entity Linking"
 # canonical_source: true
 # status: "Active"
-# version: "1.2.0"
+# version: "1.5.0"
 # updated_at: "2026-08-13"
 # author: "DNK-e.com Maksym"
 # license: "DNK-INTERNAL"
 # --- END DNK-MRH-HEADER ---
 
-# Execution Handoff: DNK-CANVAS-002 (Remediated)
+# Execution Handoff: DNK-CANVAS-002 (Decoupled Traceability)
 
 ## Identity
 - **TASK_ID**: DNK-CANVAS-002
@@ -42,10 +42,14 @@
 - **Database**: PostgreSQL schema `hub_memory` with dual partial unique indexes for `element_id IS NOT NULL` / `element_id IS NULL`
 - **Runtime environment**: Python 3.14 + FastAPI + SQLAlchemy + Alembic + Web Crypto (`window.crypto.subtle`)
 
-## Git
-- **Branch**: `mentor/canvas/DNK-CANVAS-002-research-links`
-- **Commit SHA**: (pending local commit)
-- **Push status**: (pending push to origin/mentor/canvas/DNK-CANVAS-002-research-links)
+## Decoupled Traceability Model (Mentor Audit Approved)
+- **Base Commit (origin/main)**: `ab1c425ff109d0b2c7bcead12b1b46de5b7778b9`
+- **Code Implementation Commits**:
+  - `7f276e1f9e48bf51bb7547d41cb59f25b585831c` *(Phase 2 links, asset presign/commit & approval gate)*
+  - `11e3de01c843047deec1dce1c06bbf7281e113a7` *(P0/P1 audit fixes: TS types, crypto.subtle, binary PUT, 403 approval consumption)*
+- **Audit Documentation Baseline**:
+  - `5a95b4aaaad2454f1df32f7a4ca06357c4ae158b` *(Audit baseline HEAD prior to decoupled model)*
+- **Push status**: PUSHED (`origin/mentor/canvas/DNK-CANVAS-002-research-links`)
 - **PR status**: PR_READY for mentor audit
 
 ## Status
@@ -56,11 +60,11 @@
 - **PR_READY**: true
 - **MERGED**: false
 
-## Handoff
+## Handoff & Known Risks
 - **Report path**: `docs/handoffs/HANDOFF_DNK-CANVAS-002_2026-08-13.md`
+- **Technical report for Antigravity AI**: `docs/reports/LAST_EXECUTION_REPORT.md`
 - **Known risks**:
   - Web Crypto API (`window.crypto.subtle`) browser availability requirement
   - Production S3/MinIO bucket configuration vs local fixture upload endpoint
-  - Supervisor approval gate one-time consumption
-- **Dependencies**: None.
+  - Supervisor approval gate one-time consumption (`403 APPROVAL_ALREADY_CONSUMED`)
 - **Next action**: Re-request mentor audit on branch `mentor/canvas/DNK-CANVAS-002-research-links`.
