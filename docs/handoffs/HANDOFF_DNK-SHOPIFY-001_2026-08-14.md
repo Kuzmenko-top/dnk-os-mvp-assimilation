@@ -24,8 +24,8 @@
 
 ## 🔑 Key Accomplishments
 1. **Verified Source & Target Paths**:
-   - `LEGACY_THEME_PATH`: `/Users/kuzmenko.top/Kuzmenko/MY_LIFE_WORK/DNK_HUB/services/dnk_shopify/DNK-e.com`
-   - `TARGET_THEME_PATH`: `/Users/kuzmenko.top/Kuzmenko/MY_LIFE_WORK/DNK_HUB/services/dnk_shopify/DNK_Ecom_v1_0_0`
+   - `LEGACY_THEME_PATH`: `/Users/<username>/Kuzmenko/MY_LIFE_WORK/DNK_HUB/services/dnk_shopify/DNK-e.com`
+   - `TARGET_THEME_PATH`: `/Users/<username>/Kuzmenko/MY_LIFE_WORK/DNK_HUB/services/dnk_shopify/DNK_Ecom_v1_0_0`
 2. **Created Baseline Inventories**:
    - `docs/shopify-migration/DNK_THEME_INVENTORY.md`
    - `docs/shopify-migration/HORIZON_CORE_INVENTORY.md`

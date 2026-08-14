@@ -18,15 +18,15 @@
 - **Commit SHA**: `ac03847212af7e9c8cac021e89b8af8563a2682f` (Base `main`)
 
 ## 🏗️ Source Theme (Legacy)
-- **Path**: `/Users/kuzmenko.top/Kuzmenko/MY_LIFE_WORK/DNK_HUB/services/dnk_shopify/DNK-e.com`
+- **Path**: `/Users/<username>/Kuzmenko/MY_LIFE_WORK/DNK_HUB/services/dnk_shopify/DNK-e.com`
 - **Connected Remote**: `https://github.com/DNKShopify/DNK-e.com.git`
 - **Branch**: `feature/dnk-ecom-v0.0.1-quiz-app` / `main`
 - **Commit**: `c6a8051` ("feat(horizon): integrate quiz app assets into DNK Ecom v0.0.1")
 - **Theme Version**: Sections 2.0 / DNK Ecom v0.0.1
 
 ## 🎯 Target Core (Horizon Blocks 3.0)
-- **Path**: `/Users/kuzmenko.top/Kuzmenko/MY_LIFE_WORK/DNK_HUB/services/dnk_shopify/DNK_Ecom_v1_0_0`
-- **Reference Clean Extracted**: `/Users/kuzmenko.top/Kuzmenko/MY_LIFE_WORK/DNK_HUB/services/dnk_shopify/purchased_themes/extracted/Tinker 4.3.1`
+- **Path**: `/Users/<username>/Kuzmenko/MY_LIFE_WORK/DNK_HUB/services/dnk_shopify/DNK_Ecom_v1_0_0`
+- **Reference Clean Extracted**: `/Users/<username>/Kuzmenko/MY_LIFE_WORK/DNK_HUB/services/dnk_shopify/purchased_themes/extracted/Tinker 4.3.1`
 - **Branch**: `dnk-ecom-v0.0.1` / `main`
 - **Horizon Version**: Blocks 3.0 / Tinker 4.3.1 Baseline Core
 

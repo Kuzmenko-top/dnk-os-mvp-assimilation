@@ -13,8 +13,8 @@
 # Horizon / Tinker 4.3.1 Core Inventory (Target Baseline)
 
 ## 📌 Executive Summary
-- **Path**: `/Users/kuzmenko.top/Kuzmenko/MY_LIFE_WORK/DNK_HUB/services/dnk_shopify/DNK_Ecom_v1_0_0`
-- **Extracted Source**: `/Users/kuzmenko.top/Kuzmenko/MY_LIFE_WORK/DNK_HUB/services/dnk_shopify/purchased_themes/extracted/Tinker 4.3.1`
+- **Path**: `/Users/<username>/Kuzmenko/MY_LIFE_WORK/DNK_HUB/services/dnk_shopify/DNK_Ecom_v1_0_0`
+- **Extracted Source**: `/Users/<username>/Kuzmenko/MY_LIFE_WORK/DNK_HUB/services/dnk_shopify/purchased_themes/extracted/Tinker 4.3.1`
 - **Architecture**: Shopify Blocks 3.0 / Horizon Standard Core Architecture
 - **Purpose**: Clean, unpolluted baseline core for theme block expansion.
 

@@ -13,7 +13,7 @@
 # DNK-e.com Legacy Theme Inventory (Baseline Audit)
 
 ## 📌 Executive Summary
-- **Path**: `/Users/kuzmenko.top/Kuzmenko/MY_LIFE_WORK/DNK_HUB/services/dnk_shopify/DNK-e.com`
+- **Path**: `/Users/<username>/Kuzmenko/MY_LIFE_WORK/DNK_HUB/services/dnk_shopify/DNK-e.com`
 - **Git Branch**: `feature/dnk-ecom-v0.0.1-quiz-app` (commit `c6a8051`) / `main` (`ffa0b79`)
 - **Connected Repository**: `DNKShopify/DNK-e.com` & `Kuzmenko-top/m-craft.top`
 - **Architecture**: Online Store 2.0 / Horizon 0.0.1 hybrid theme
