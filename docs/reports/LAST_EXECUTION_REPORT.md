@@ -1,62 +1,92 @@
 # --- DNK-MRH-HEADER ---
 # mrh_id: "LAST_EXECUTION_REPORT.md"
-# purpose: "Technical Execution Report for Antigravity AI regarding task DNK-CORE-005 (Gate 6 Roadmap Planning)."
-# canonical_source: true
-# status: "Active"
-# version: "1.0.0"
-# updated_at: "2026-08-14"
+# purpose: "Technical report for Antigravity AI detailing the successful database migration for Security Gates Stage 1"
 # author: "DNK-e.com Maksym"
 # license: "MIT"
+# status: "Completed"
+# version: "1.0.0"
+# updated_at: "2026-08-13"
 # --- END DNK-MRH-HEADER ---
 
-# 📊 TECHNICAL EXECUTION REPORT: DNK-CORE-005
+# Technical Execution Report: Security Gates — Stage 1 (Alembic Migration)
 
-**Task ID:** DNK-CORE-005  
-**Title:** Gate 6 Roadmap Planning  
-**Session Owner:** DNK_MENTOR_CORE  
-**Domain:** Core Runtime / Architecture  
-**Repository:** Kuzmenko-top/DNK_OS_MVP  
-**Implementation Branch:** mentor/core/DNK-CORE-005-gate6-roadmap  
-**Execution Status:** COMPLETED  
+## 📌 Executive Summary
+Alembic migration has been successfully created, tested, and executed for the **Security Gates Stage 1 (Database Schema)**. The tables `security_approvals` and `security_audit_logs` have been physically created and verified in the PostgreSQL instance.
+
+**Commit SHA**: `728f9ad424fef4381bb8faa9841371412328bbcc`
+**Migration Revision**: `security_gates_001` (Down-revision: `2b3c4d5e6f7a`)
 
 ---
 
-## 1. Executive Summary
+## 🏗️ Created Schema Details
 
-Task `DNK-CORE-005` successfully consolidates the post-Gate-5 multi-tenant architecture and establishes the comprehensive roadmap for **Gate 6 (Global Rollout & Multi-Tenant Scaling)**. The roadmap defines transition criteria from per-workspace whitelisting (validated under Gate 5C-B) to global dynamic tenant activation (`validated/global`).
+### 1. Table: `security_approvals`
+Acts as the central approval store mapping run executions, agent triggers, action hashes, and authorization status.
+*   `id` (`UUID`, PK)
+*   `run_id` (`UUID`, non-nullable)
+*   `agent_id` (`VARCHAR(255)`, non-nullable)
+*   `action_name` (`VARCHAR(255)`, non-nullable)
+*   `args_hash` (`VARCHAR(64)`, non-nullable) - SHA-256 action arguments fingerprint
+*   `idempotency_key` (`VARCHAR(64)`, unique, nullable)
+*   `status` (`ENUM('pending', 'approved', 'rejected', 'timeout_rejected')`, default: `'pending'`)
+*   `approved_by` (`VARCHAR(255)`, nullable)
+*   `approved_at` (`TIMESTAMP`, nullable)
+*   `timeout_at` (`TIMESTAMP`, non-nullable)
+*   `created_at` (`TIMESTAMP`, server_default: `NOW()`)
+*   `updated_at` (`TIMESTAMP`, server_default: `NOW()`, onupdate: `NOW()`)
+
+**Indices**:
+*   `idx_approvals_run_action` (`run_id`, `action_name`)
+*   `idx_approvals_idempotency` (`idempotency_key`)
+
+### 2. Table: `security_audit_logs`
+Stores the high-fidelity audit trail for security checks and policy validations.
+*   `id` (`UUID`, PK)
+*   `approval_id` (`UUID`, Foreign Key to `security_approvals.id`)
+*   `event_type` (`VARCHAR(50)`, non-nullable)
+*   `event_payload` (`JSONB`, nullable)
+*   `timestamp` (`TIMESTAMP`, server_default: `NOW()`)
+
+**Indices**:
+*   `idx_audit_approval` (`approval_id`)
 
 ---
 
-## 2. Key Deliverables Produced
+## 🧪 Verification Log & Cycle Tests
 
-1. **Gate 6 Roadmap Specification (`DNK-SPEC-0640_gate6_roadmap_planning.md`)**:
-   - Defines strategic objectives: Dynamic workspace provisioning, zero-leakage RAG state, enterprise observability, and production hardening.
-   - Outlines baseline post-Gate-5 architectural guarantees.
-   - Identifies 4 core blockers to global rollout along with technical resolutions.
-   - Structures implementation into 3 parallel execution tracks:
-     - **Track A:** RAG & Knowledge Assimilation Isolation
-     - **Track B:** Observability & Operational Telemetry (Langfuse/OpenTelemetry)
-     - **Track C:** Production Hardening & Disaster Recovery
-
-2. **Task Forest Architecture (`Tree_11_Gate6_Global_Rollout_Roadmap.md` & `Flower_21_Gate6_Roadmap_Planning.md`)**:
-   - Integrated into canonical `DNKOS_MVP/docs/tasks/` taxonomy.
-   - Fully compliant with MRH header standards and 5-Plant Scale structure.
-
-3. **Handoff Package (`HANDOFF_DNK-CORE-005_2026-08-14.md`)**:
-   - Contains task state, file manifest, commit traceability details, and next action triggers.
+1.  **Upstream Head Check**:
+    ```bash
+    uv run alembic -c services/dnk_canvas_api/alembic.ini current
+    # Output: 2b3c4d5e6f7a
+    ```
+2.  **Upgrade Execution**:
+    ```bash
+    uv run alembic -c services/dnk_canvas_api/alembic.ini upgrade head
+    # Output: Running upgrade 2b3c4d5e6f7a -> security_gates_001, Create security_gates tables
+    ```
+3.  **Downgrade Resiliency Check**:
+    ```bash
+    uv run alembic -c services/dnk_canvas_api/alembic.ini downgrade -1
+    # Output: Running downgrade security_gates_001 -> 2b3c4d5e6f7a, Create security_gates tables
+    ```
+    *PostgreSQL Clean-up Verification:* Custom enum type `security_approval_status` successfully dropped inside the `downgrade` block to prevent duplicate type creation errors on subsequent runs.
+4.  **Final Upgrade**:
+    ```bash
+    uv run alembic -c services/dnk_canvas_api/alembic.ini upgrade head
+    # Output: Upgraded to security_gates_001 (head)
+    ```
+5.  **PostgreSQL Verification**:
+    ```sql
+    docker exec dnk-db psql -U postgres -d dnk_hub -c "\dt security_*"
+                List of relations
+     Schema |        Name         | Type  |  Owner   
+    --------+---------------------+-------+----------
+     public | security_approvals  | table | postgres
+     public | security_audit_logs | table | postgres
+    ```
 
 ---
 
-## 3. Verification & Compliance Audit
-
-- **MRH Header Validation**: 100% compliance across all created specification and task documents.
-- **Scope Audit**: Out-of-scope items (production code modifications, direct merge to main, global mode activation) strictly respected. Zero unauthorized edits outside `DNKOS_MVP`.
-- **Branch Isolation**: Executed strictly inside `mentor/core/DNK-CORE-005-gate6-roadmap`.
-
----
-
-## 4. Next Steps & Handoff Directive
-
-1. Commit created roadmap artifacts on `mentor/core/DNK-CORE-005-gate6-roadmap`.
-2. Push implementation branch to `origin`.
-3. Submit PR for Antigravity AI / Mentor Core architectural clearance.
+## 📂 Active File Offsets
+*   **Alembic Target path**: `DNKOS_MVP/services/dnk_canvas_api/alembic/versions/security_gates_001_security_tables.py`
+*   **Requested path**: `DNKOS_MVP/migrations/versions/security_gates_001_security_tables.py`
