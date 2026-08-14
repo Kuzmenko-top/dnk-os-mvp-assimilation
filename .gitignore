@@ -22,3 +22,4 @@ DNKOS_MVP/**/*
 !.gitignore
 !.github/workflows/validate-artifacts.yml
 !scripts/export-assimilation.sh
+__pycache__/
