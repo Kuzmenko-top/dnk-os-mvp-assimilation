@@ -27,14 +27,12 @@ class Plugin(ABC):
         self._quarantine_reason: Optional[str] = None
 
     @property
-    @abstractmethod
     def name(self) -> str:
-        pass
+        return self.__class__.__name__.lower()
 
     @property
-    @abstractmethod
     def version(self) -> str:
-        pass
+        return "1.0.0"
 
     @property
     def extension_id(self) -> str:
@@ -77,10 +75,8 @@ class Plugin(ABC):
     def health_check(self) -> bool:
         return self._state in [PluginState.INITIALIZED, PluginState.ACTIVE]
 
-    @abstractmethod
     def get_tools(self) -> List[Dict[str, Any]]:
-        pass
+        return []
 
-    @abstractmethod
     def get_event_handlers(self) -> Dict[str, callable]:
-        pass
+        return {}
