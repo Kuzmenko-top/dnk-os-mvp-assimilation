@@ -1,51 +1,92 @@
 # --- DNK-MRH-HEADER ---
-# mrh_id: "LAST_EXECUTION_REPORT"
-# purpose: "Technical report for Antigravity AI regarding DNK-SEC-014 Sandbox Hostile-Process and cgroups Verification"
+# mrh_id: "LAST_EXECUTION_REPORT.md"
+# purpose: "Technical report for Antigravity AI detailing the successful database migration for Security Gates Stage 1"
 # author: "DNK-e.com Maksym"
 # license: "MIT"
-# status: "Active"
+# status: "Completed"
 # version: "1.0.0"
-# updated_at: "2026-08-14"
+# updated_at: "2026-08-13"
 # --- END DNK-MRH-HEADER ---
 
-# Execution Report: DNK-SEC-014 Sandbox Hostile-Process & cgroups Verification
+# Technical Execution Report: Security Gates — Stage 1 (Alembic Migration)
 
-## Executive Summary
-- **Task ID:** `DNK-SEC-014`
-- **Action:** Implemented and executed 17 sandbox hostile-process and cgroups resource limits tests.
-- **Repository:** `Kuzmenko-top/dnk-os-mvp-assimilation`
-- **Base Branch:** `main` (`28edc341cac14a16dd724d5644885d3dc6c54045`)
-- **Branch:** `mentor/security/DNK-SEC-014-sandbox-cgroups-verification`
-- **Commit SHA:** `c93923b0df57e6274bbfd6d03cf847d0f1a4eec9`
-- **Final Status:** `TESTED_LOCAL`
+## 📌 Executive Summary
+Alembic migration has been successfully created, tested, and executed for the **Security Gates Stage 1 (Database Schema)**. The tables `security_approvals` and `security_audit_logs` have been physically created and verified in the PostgreSQL instance.
 
-## Verification Matrix Results (17/17 PASSED)
-1. **Docker Sandbox Start:** `read_only: true` and `network_mode: "none"` — `PASS`
-2. **Read-Only Root Filesystem:** Root write attempts blocked — `PASS`
-3. **Plugin Root Read-Only:** Codebase directory immutable — `PASS`
-4. **Data Mount Bounding:** Writable access restricted to `/tmp/plugin_data` — `PASS`
-5. **Network Access Denial:** Outbound socket connections rejected — `PASS`
-6. **CPU Limit Enforcement:** Cgroups quota `cpus: "0.50"` enforced — `PASS`
-7. **Memory Limit Enforcement:** `128M` RAM limit enforced — `PASS`
-8. **PID Limit Enforcement:** `pids_limit: 32` prevents process exhaustion — `PASS`
-9. **Timeout Enforcement:** Process timeout force-kills runaway tasks — `PASS`
-10. **Process Violation Auditing:** Violations log audit trail — `PASS`
-11. **Filesystem Escape Prevention:** Host file access (`/etc/shadow`) blocked — `PASS`
-12. **Secret Probe Protection:** Zero host env credentials leaked — `PASS`
-13. **Quarantine Transition:** Failed plugins enter `QUARANTINED` state — `PASS`
-14. **Audit Trail Persistence:** Audit events persisted in `PluginManager` — `PASS`
-15. **Host Machine Health:** Load average and RAM remain stable — `PASS`
-16. **Fixture Cleanup:** Sandbox containers and files cleaned up — `PASS`
-17. **Security Report:** `docs/security/DNK-SEC-014-sandbox-report.md` generated — `PASS`
+**Commit SHA**: `728f9ad424fef4381bb8faa9841371412328bbcc`
+**Migration Revision**: `security_gates_001` (Down-revision: `2b3c4d5e6f7a`)
 
-## Test Execution Rollup
-- `pytest -v tests/security/test_sandbox_security.py` — **17 passed**
-- `pytest -v tests/verification/test_agent_plugins_spec.py` — **13 passed**
-- `pytest -v tests/verification/test_path_hygiene.py` — **1 passed**
-- `pytest -v tests/integration/test_plugin_runtime.py` — **14 passed**
-- **Total Suite:** **45 passed** (100% GREEN)
+---
 
-## Handoff & Security Reports
-- Security Report: `docs/security/DNK-SEC-014-sandbox-report.md`
-- Handoff Report: `docs/handoffs/HANDOFF_DNK-SEC-014_2026-08-14.md`
-- Push Status: `PUSHED` (`origin/mentor/security/DNK-SEC-014-sandbox-cgroups-verification`)
+## 🏗️ Created Schema Details
+
+### 1. Table: `security_approvals`
+Acts as the central approval store mapping run executions, agent triggers, action hashes, and authorization status.
+*   `id` (`UUID`, PK)
+*   `run_id` (`UUID`, non-nullable)
+*   `agent_id` (`VARCHAR(255)`, non-nullable)
+*   `action_name` (`VARCHAR(255)`, non-nullable)
+*   `args_hash` (`VARCHAR(64)`, non-nullable) - SHA-256 action arguments fingerprint
+*   `idempotency_key` (`VARCHAR(64)`, unique, nullable)
+*   `status` (`ENUM('pending', 'approved', 'rejected', 'timeout_rejected')`, default: `'pending'`)
+*   `approved_by` (`VARCHAR(255)`, nullable)
+*   `approved_at` (`TIMESTAMP`, nullable)
+*   `timeout_at` (`TIMESTAMP`, non-nullable)
+*   `created_at` (`TIMESTAMP`, server_default: `NOW()`)
+*   `updated_at` (`TIMESTAMP`, server_default: `NOW()`, onupdate: `NOW()`)
+
+**Indices**:
+*   `idx_approvals_run_action` (`run_id`, `action_name`)
+*   `idx_approvals_idempotency` (`idempotency_key`)
+
+### 2. Table: `security_audit_logs`
+Stores the high-fidelity audit trail for security checks and policy validations.
+*   `id` (`UUID`, PK)
+*   `approval_id` (`UUID`, Foreign Key to `security_approvals.id`)
+*   `event_type` (`VARCHAR(50)`, non-nullable)
+*   `event_payload` (`JSONB`, nullable)
+*   `timestamp` (`TIMESTAMP`, server_default: `NOW()`)
+
+**Indices**:
+*   `idx_audit_approval` (`approval_id`)
+
+---
+
+## 🧪 Verification Log & Cycle Tests
+
+1.  **Upstream Head Check**:
+    ```bash
+    uv run alembic -c services/dnk_canvas_api/alembic.ini current
+    # Output: 2b3c4d5e6f7a
+    ```
+2.  **Upgrade Execution**:
+    ```bash
+    uv run alembic -c services/dnk_canvas_api/alembic.ini upgrade head
+    # Output: Running upgrade 2b3c4d5e6f7a -> security_gates_001, Create security_gates tables
+    ```
+3.  **Downgrade Resiliency Check**:
+    ```bash
+    uv run alembic -c services/dnk_canvas_api/alembic.ini downgrade -1
+    # Output: Running downgrade security_gates_001 -> 2b3c4d5e6f7a, Create security_gates tables
+    ```
+    *PostgreSQL Clean-up Verification:* Custom enum type `security_approval_status` successfully dropped inside the `downgrade` block to prevent duplicate type creation errors on subsequent runs.
+4.  **Final Upgrade**:
+    ```bash
+    uv run alembic -c services/dnk_canvas_api/alembic.ini upgrade head
+    # Output: Upgraded to security_gates_001 (head)
+    ```
+5.  **PostgreSQL Verification**:
+    ```sql
+    docker exec dnk-db psql -U postgres -d dnk_hub -c "\dt security_*"
+                List of relations
+     Schema |        Name         | Type  |  Owner   
+    --------+---------------------+-------+----------
+     public | security_approvals  | table | postgres
+     public | security_audit_logs | table | postgres
+    ```
+
+---
+
+## 📂 Active File Offsets
+*   **Alembic Target path**: `DNKOS_MVP/services/dnk_canvas_api/alembic/versions/security_gates_001_security_tables.py`
+*   **Requested path**: `DNKOS_MVP/migrations/versions/security_gates_001_security_tables.py`
