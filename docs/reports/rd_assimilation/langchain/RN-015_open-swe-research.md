@@ -36,7 +36,7 @@ In-depth technical research and architectural analysis of `langchain-ai/open-swe
 - **Repo Analysis State:** Scans codebase, parses AST signatures, constructs context graphs.
 - **Planner Node:** Formulates candidate edit plans and test scenarios.
 - **Executor & Patch Node:** Generates file modifications using unified diffs or targeted block replacements.
-- **Verifier Node:** Executes test suites in a isolated runtime and triggers self-healing retries upon failure.
+- **Verifier Node:** Executes test suites in an isolated runtime and triggers self-healing retries upon failure.
 
 ### 2. Event-Driven Dispatcher (`agent/dispatch.py`)
 - Dispatches user issues / GitHub PR tasks to target agent workflows.
