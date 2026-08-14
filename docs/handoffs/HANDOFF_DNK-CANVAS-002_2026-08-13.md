@@ -38,7 +38,7 @@
 
 ## Verification
 - **Unit & Integration tests**: 6 passed in `tests/verification/test_canvas_research_links.py`, 29 passed in `services/dnk_canvas_api/tests/`
-- **Exact command**: `/Users/kuzmenko.top/Kuzmenko/MY_LIFE_WORK/DNK_HUB/DNKOS_MVP/.venv/bin/pytest tests/verification/test_canvas_research_links.py`
+- **Exact command**: `/Users/<username>/Kuzmenko/MY_LIFE_WORK/DNK_HUB/DNKOS_MVP/.venv/bin/pytest tests/verification/test_canvas_research_links.py`
 - **Database**: PostgreSQL schema `hub_memory` with dual partial unique indexes for `element_id IS NOT NULL` / `element_id IS NULL`
 - **Runtime environment**: Python 3.14 + FastAPI + SQLAlchemy + Alembic + Web Crypto (`window.crypto.subtle`)
 
