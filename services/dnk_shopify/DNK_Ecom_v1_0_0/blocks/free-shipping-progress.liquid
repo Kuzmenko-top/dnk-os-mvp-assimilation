@@ -1,0 +1,165 @@
+{% comment %}
+  DNK OS E-Commerce Module: Free Shipping Progress Bar (Horizon Blocks 3.0 Compatible)
+  # author: "DNK-e.com Maksym"
+  Renders live progress bar calculating remaining cart amount needed for free delivery.
+{% endcomment %}
+
+{% assign block_settings = block.settings %}
+{% assign threshold_value = block_settings.free_shipping_threshold | default: 3000 %}
+{% assign threshold_subunits = threshold_value | times: 100 %}
+
+{% assign current_total = cart.total_price | default: 0 %}
+
+{% if threshold_value > 0 %}
+  {% if current_total >= threshold_subunits %}
+    {% assign progress_percent = 100 %}
+    {% assign is_achieved = true %}
+    {% assign remaining_subunits = 0 %}
+    {% assign remaining_formatted = 0 | money %}
+  {% else %}
+    {% assign is_achieved = false %}
+    {% assign remaining_subunits = threshold_subunits | minus: current_total %}
+    {% assign remaining_formatted = remaining_subunits | money %}
+    {% if threshold_subunits > 0 %}
+      {% assign progress_percent = current_total | times: 100 | divided_by: threshold_subunits %}
+    {% else %}
+      {% assign progress_percent = 0 %}
+    {% endif %}
+    {% if progress_percent > 100 %}
+      {% assign progress_percent = 100 %}
+    {% endif %}
+  {% endif %}
+{% else %}
+  {% assign is_achieved = true %}
+  {% assign progress_percent = 100 %}
+  {% assign remaining_formatted = 0 | money %}
+{% endif %}
+
+<free-shipping-progress
+  class="dnk-free-shipping-progress block p-3 rounded-xl border border-slate-800 bg-slate-900/80 text-xs my-2"
+  data-threshold-subunits="{{ threshold_subunits }}"
+  data-currency-symbol="{{ cart.currency.symbol }}"
+  {{ block.shopify_attributes }}
+>
+  <div class="flex justify-between items-center mb-1.5 font-medium" aria-live="polite">
+    <span class="text-slate-200">
+      {% if block_settings.icon_emoji != blank %}{{ block_settings.icon_emoji }} {% endif %}{{ block_settings.title | escape }}
+    </span>
+    <span class="dnk-free-shipping-status font-bold font-mono {% if is_achieved %}text-emerald-400{% else %}text-amber-400{% endif %}">
+      {% if is_achieved %}
+        {{ block_settings.achieved_message | escape }}
+      {% else %}
+        {{ block_settings.remaining_message | replace: '[amount]', remaining_formatted | escape }}
+      {% endif %}
+    </span>
+  </div>
+
+  <div
+    class="w-full bg-slate-950 rounded-full h-2 overflow-hidden border border-slate-800"
+    role="progressbar"
+    aria-valuenow="{{ progress_percent }}"
+    aria-valuemin="0"
+    aria-valuemax="100"
+    aria-label="{{ block_settings.title | escape }}"
+  >
+    <div
+      class="dnk-free-shipping-fill bg-gradient-to-r from-amber-500 to-emerald-400 h-full transition-all duration-300"
+      style="width: {{ progress_percent }}%;"
+    ></div>
+  </div>
+</free-shipping-progress>
+
+{% javascript %}
+  if (!customElements.get('free-shipping-progress')) {
+    customElements.define('free-shipping-progress', class FreeShippingProgress extends HTMLElement {
+      connectedCallback() {
+        this.onCartUpdated = this.onCartUpdated.bind(this);
+        document.addEventListener('cart:updated', this.onCartUpdated);
+        document.addEventListener('cart:refresh', this.onCartUpdated);
+        document.addEventListener('cart-drawer:updated', this.onCartUpdated);
+      }
+
+      disconnectedCallback() {
+        document.removeEventListener('cart:updated', this.onCartUpdated);
+        document.removeEventListener('cart:refresh', this.onCartUpdated);
+        document.removeEventListener('cart-drawer:updated', this.onCartUpdated);
+      }
+
+      onCartUpdated(event) {
+        if (!event || !event.detail) return;
+        const cart = event.detail.cart || event.detail;
+        if (typeof cart.total_price === 'number') {
+          this.updateProgress(cart.total_price);
+        }
+      }
+
+      updateProgress(totalPriceSubunits) {
+        const thresholdSubunits = parseInt(this.dataset.thresholdSubunits, 10) || 0;
+        if (thresholdSubunits <= 0) return;
+
+        const fillEl = this.querySelector('.dnk-free-shipping-fill');
+        const statusEl = this.querySelector('.dnk-free-shipping-status');
+        const progressBar = this.querySelector('[role="progressbar"]');
+
+        let percent = Math.min(100, Math.round((totalPriceSubunits / thresholdSubunits) * 100));
+        if (isNaN(percent)) percent = 0;
+
+        if (fillEl) fillEl.style.width = `${percent}%`;
+        if (progressBar) progressBar.setAttribute('aria-valuenow', percent);
+
+        if (statusEl) {
+          if (totalPriceSubunits >= thresholdSubunits) {
+            statusEl.classList.remove('text-amber-400');
+            statusEl.classList.add('text-emerald-400');
+          } else {
+            statusEl.classList.remove('text-emerald-400');
+            statusEl.classList.add('text-amber-400');
+          }
+        }
+      }
+    });
+  }
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "Free Shipping Progress",
+  "settings": [
+    {
+      "type": "text",
+      "id": "icon_emoji",
+      "label": "Emoji icon",
+      "default": "🚚"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Заголовок продукту / доставки",
+      "default": "Безкоштовна доставка Новою Поштою"
+    },
+    {
+      "type": "number",
+      "id": "free_shipping_threshold",
+      "label": "Поріг безкоштовної доставки (в грн / валюті стору)",
+      "default": 3000
+    },
+    {
+      "type": "text",
+      "id": "remaining_message",
+      "label": "Текст до безкоштовної доставки (використовуйте [amount])",
+      "default": "Додайте ще [amount]"
+    },
+    {
+      "type": "text",
+      "id": "achieved_message",
+      "label": "Повідомлення при досягненні порогу",
+      "default": "🎉 Вітаємо! Ви отримали безкоштовну доставку!"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Free Shipping Progress"
+    }
+  ]
+}
+{% endschema %}
