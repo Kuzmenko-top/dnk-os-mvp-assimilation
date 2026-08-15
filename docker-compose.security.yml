@@ -1,0 +1,36 @@
+# --- DNK-MRH-HEADER ---
+# mrh_id: "docker_compose_security"
+# purpose: "Hardened Docker compose configuration for Plugin Sandbox isolation & cgroups limits"
+# author: "DNK-e.com Maksym"
+# license: "MIT"
+# status: "Active"
+# version: "1.1.0"
+# updated_at: "2026-08-15"
+# --- END DNK-MRH-HEADER ---
+
+version: "3.8"
+
+services:
+  plugin_sandbox:
+    image: python:3.12-slim
+    container_name: dnk_plugin_sandbox_sec15
+    user: "10001:10001"
+    read_only: true
+    network_mode: "none"
+    restart: "no"
+    deploy:
+      resources:
+        limits:
+          cpus: "0.50"
+          memory: 128M
+          pids: 32
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+      - seccomp=./docker/seccomp_profile.json
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=32m
+    volumes:
+      - ./data/plugin_data:/tmp/plugin_data:rw
+    command: ["python3", "-c", "print('Hardened Sandbox Ready')"]
