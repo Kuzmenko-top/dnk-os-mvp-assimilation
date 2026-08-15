@@ -1,0 +1,38 @@
+{% comment %}
+  # author: "DNK-e.com Maksym"
+  DNK migration validation-only section.
+  Remove or rename before production release.
+{% endcomment %}
+
+<div class="dnk-migration-lab page-width py-6">
+  <div class="border border-dashed border-amber-500/50 p-4 rounded-2xl bg-slate-900/50">
+    <h3 class="text-sm font-bold text-amber-400 mb-2">🧪 DNK Migration Validation Lab</h3>
+    {% for block in section.blocks %}
+      {% case block.type %}
+        {% when '@theme' %}
+          {% content_for 'blocks' %}
+        {% when 'free-shipping-progress' %}
+          {% render block %}
+        {% else %}
+          {% render block %}
+      {% endcase %}
+    {% endfor %}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "DNK Migration Lab",
+  "settings": [],
+  "blocks": [
+    {
+      "type": "@theme"
+    }
+  ],
+  "presets": [
+    {
+      "name": "DNK Migration Lab"
+    }
+  ]
+}
+{% endschema %}
