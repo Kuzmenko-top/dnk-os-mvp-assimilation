@@ -3,7 +3,7 @@
 # purpose: "Handoff report for DNK-CORE-005 (Gate 6 Roadmap Planning)."
 # canonical_source: true
 # status: "Active"
-# version: "1.0.1"
+# version: "1.0.0"
 # updated_at: "2026-08-14"
 # author: "DNK-e.com Maksym"
 # license: "MIT"
@@ -19,7 +19,7 @@ repository: "Kuzmenko-top/DNK_OS_MVP"
 base_branch: "main"
 implementation_branch: "mentor/core/DNK-CORE-005-gate6-roadmap"
 status: "COMPLETED_LOCAL"
-commit_sha: "71911cd5a49ceca481fa79be62654e52a4dbe36c"
+commit_sha: "4d312587d"
 push_status: "BRANCH_READY"
 changed_files:
   - "docs/tech/specs/DNK-SPEC-0640_gate6_roadmap_planning.md"

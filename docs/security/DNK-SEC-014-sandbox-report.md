@@ -40,10 +40,6 @@
 - Violating plugins automatically transition to `PluginState.QUARANTINED`.
 - Quarantined plugins cannot be re-registered or executed until administrator unquarantine.
 
-## Status
-- **Status:** `PR_OPEN` (SECURITY_VERIFIED_WITH_CONDITIONS)
-- **Next action:** Mentor Security PR Review
-
 ## 4. Host Health & Cleanup
 - Host load average remained unaffected during all test runs.
 - Temporary test directories and containers cleaned up automatically.
