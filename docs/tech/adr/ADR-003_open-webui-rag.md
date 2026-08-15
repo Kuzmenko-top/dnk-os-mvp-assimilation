@@ -1,42 +1,33 @@
----
-mrh_id: "ADR-003"
-title: "open-webui RAG Pipeline & Knowledge Interface"
-author: "DNK-e.com Maksym"
-license: "MIT"
-status: "Accepted"
-date: "2026-08-15"
----
-
-# ADR-003: open-webui RAG Pipeline & Knowledge Interface
+# author: "DNK-e.com Maksym"
+# ADR-003: Open WebUI RAG Pipeline
 
 ## Status
 Accepted
 
 ## Context
-DNK OS users and developers require a unified visual interface and RAG (Retrieval-Augmented Generation) pipeline for interacting with the assimilated knowledge graph, documentation, and live system state.
+Local-first knowledge retrieval requires hybrid dense/sparse search over pgvector.
 
 ## Decision
-We integrate the **open-webui RAG pipeline (DNK-ARCH-016)** as the standard human-agent chat interface and knowledge query gateway. It connects directly to the vector store / hybrid retrieval engine (Shadow Recall 2.0).
+Adopt Open WebUI RAG pipeline integrated with pgvector shadow recall.
 
 ## Alternatives Considered
-1. **Custom Streamlit / Gradio UI** — Rejected due to lack of production-grade authentication, role-based access control, and rich document chat features.
-2. **AnythingLLM** — Rejected due to rigid internal RAG pipeline structure that prevented custom LangGraph graph hooks.
+1. External SaaS vector store (violates sovereignty)
+2. Qdrant standalone container (deprecated, replaced by pgvector)
 
 ## Consequences
 ### Positive
-- Production-ready user interface out of the box with multi-modal chat support.
-- Flexible web search and RAG collection management.
+- ✅ Zero external data leaks
+- ✅ Single source of truth in PostgreSQL
 
 ### Negative
-- Currently lacks native LangGraph graph state integration (recorded in Tech Debt TD-002).
+- ⚠️ Vector index compilation load during initial ingest
 
 ## Dependencies
-- Related Pattern: **DNK-ARCH-016 (open-webui RAG)**
-- Upstream Gateway: **DNK-ARCH-017 (vLLM PagedAttention)**
-- Vector Backend: **Hybrid Recall Engine (BM25 + Dense Vector)**
+- PostgreSQL 16 + pgvector
+- Google GenAI Embeddings API
 
 ## Date
 2026-08-15
 
 ## Owner
-DNK_MENTOR / Gerych
+DNK OS Governance Team

@@ -48,15 +48,3 @@
 
 ---
 *Стандарт є обов'язковим до виконання всіма ройовими субагентами та оркестратором.*
----
-
-## 4. Architecture Governance & Assimilation Definition of Done (DoD)
-
-Майбутні R&D та SOTA асиміляції (`DNK-ASSIM-XXX`) повинні дотримуватись обов'язкового розширеного чекліста Definition of Done (DoD):
-
-- [ ] **Compatibility Matrix updated** (`docs/tech/governance/compatibility-matrix.md`)
-- [ ] **ADR created** (`docs/tech/adr/ADR-XXX.md` - при додаванні нового патерну або виявленні паттерн-конфліктів)
-- [ ] **Pattern Catalog & Dependency Graph updated** (`docs/tech/governance/pattern-catalog.md` та `pattern-dependency-graph.md`)
-- [ ] **Regression tests added & passed** (`tests/regression/test_*.py`)
-- [ ] **Tech Debt Ledger updated** (`docs/tech/governance/tech-debt-ledger.md` - при виявленні технічного боргу або апаратних обмежень)
-- [ ] **Export validated**: `./scripts/export-assimilation.sh` успішно пройдено
