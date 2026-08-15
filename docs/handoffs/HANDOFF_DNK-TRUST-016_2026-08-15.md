@@ -44,4 +44,4 @@
 - `pytest -v tests/verification/test_agent_plugins_spec.py` — **13/13 PASS**
 - `pytest -v tests/verification/test_path_hygiene.py` — **1/1 PASS**
 - `pytest -v tests/integration/test_plugin_runtime.py` — **15/15 PASS**
-- **Total Suite:** **68/68 PASS** (100% GREEN)
+- **Total Suite:** **67/67 PASS** (100% GREEN)
