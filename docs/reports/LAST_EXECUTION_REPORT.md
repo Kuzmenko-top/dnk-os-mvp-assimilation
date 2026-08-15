@@ -1,6 +1,6 @@
 # --- DNK-MRH-HEADER ---
 # mrh_id: "LAST_EXECUTION_REPORT"
-# purpose: "Technical report for Antigravity AI regarding PR #3 Creation for DNK-SEC-014"
+# purpose: "Technical report for Antigravity AI regarding PR #3 Squash Merge and Post-Merge Security Regression Verification for DNK-SEC-014"
 # author: "DNK-e.com Maksym"
 # license: "MIT"
 # status: "Active"
@@ -8,38 +8,44 @@
 # updated_at: "2026-08-14"
 # --- END DNK-MRH-HEADER ---
 
-# Execution Report: PR #3 Creation for DNK-SEC-014
+# Execution Report: PR #3 Merge and Post-Merge Security Regression Verification (DNK-SEC-014)
 
 ## Executive Summary
 - **Task ID:** `DNK-SEC-014`
-- **Action:** Created Pull Request #3 for Sandbox Hostile-Process and cgroups Verification.
+- **Action:** Executed squash merge of Pull Request #3 into `main` and verified post-merge security sandbox regression.
 - **Repository:** `Kuzmenko-top/dnk-os-mvp-assimilation`
 - **PR URL:** `https://github.com/Kuzmenko-top/dnk-os-mvp-assimilation/pull/3`
+- **Final Status:** `MERGED`
 
-## PR Artifacts & Status
+## Merge & Provenance Artifacts
 - **PR_NUMBER:** `3`
-- **STATE:** `OPEN`
+- **PR_STATUS:** `MERGED`
+- **MERGE_COMMIT_SHA:** `5469a339f6ea8b00014c4798f21820da62277af0`
 - **BASE_BRANCH:** `main`
-- **HEAD_BRANCH:** `mentor/security/DNK-SEC-014-sandbox-cgroups-verification`
-- **HEAD_COMMIT_SHA:** `59bf03e077f890644a0fabb8d69d006ad4463b1d`
-- **CI_STATUS:** `PASSED` (`validate` GitHub Actions workflow passed in 4s)
-- **MERGEABLE:** `MERGEABLE`
-- **CHANGED_FILES_COUNT:** `18`
+- **WORKING_TREE:** `CLEAN`
 
-## Docker Inspect Sandbox Assertions
-- `ReadonlyRootfs:` `True`
-- `CapDrop:` `["ALL"]`
-- `NetworkMode:` `none`
-- `NanoCpus:` `0.50`
-- `Memory:` `128M`
-- `PidsLimit:` `32`
-- `SecurityOpt:` `["no-new-privileges:true"]`
+## Post-Merge Security Regression Rollup (45/45 PASSED)
+1. `pytest -q tests/security/test_sandbox_security.py` — **17 passed**
+   - ReadonlyRootfs enforcement
+   - CAP_DROP ALL enforcement
+   - NetworkMode: none enforcement
+   - CPU quota limit enforcement (`cpus: 0.50`)
+   - Memory limit enforcement (`mem_limit: 128M`)
+   - PID limit enforcement (`pids_limit: 32`)
+   - Process timeout force-kill
+   - File system escape & host file access block
+   - Secret probe credential isolation
+   - Violation audit logging & quarantine transition
+2. `pytest -q tests/verification/test_agent_plugins_spec.py` — **13 passed**
+3. `pytest -q tests/verification/test_path_hygiene.py` — **1 passed**
+4. `pytest -q tests/integration/test_plugin_runtime.py` — **14 passed**
 
-## Test Execution Rollup (45/45 PASS)
-- `pytest -v tests/security/test_sandbox_security.py` — **17 passed**
-- `pytest -v tests/verification/test_agent_plugins_spec.py` — **13 passed**
-- `pytest -v tests/verification/test_path_hygiene.py` — **1 passed**
-- `pytest -v tests/integration/test_plugin_runtime.py` — **14 passed**
-
-## Next Steps
-- Awaiting mentor security review and merge approval for PR #3.
+## Final Task Status (DNK-SEC-014)
+```yaml
+DNK-SEC-014:
+  status: MERGED
+  security_verification: PASSED
+  post_merge_tests: 45 passed
+  working_tree: clean
+  next_task: DNK-SEC-015 (Sandbox Runtime Hardening Verification)
+```
