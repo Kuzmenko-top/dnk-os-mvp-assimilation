@@ -1,0 +1,15 @@
+# --- DNK-MRH-HEADER ---
+# mrh_id: "dockerfile_security_sandbox"
+# purpose: "Minimal hardened Dockerfile for DNK OS Plugin Sandbox"
+# author: "DNK-e.com Maksym"
+# license: "MIT"
+# status: "Active"
+# version: "1.0.0"
+# updated_at: "2026-08-14"
+# --- END DNK-MRH-HEADER ---
+
+FROM python:3.12-slim
+WORKDIR /app
+RUN useradd -m -s /bin/bash sandboxuser
+USER sandboxuser
+CMD ["python3"]
