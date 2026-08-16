@@ -1,0 +1,91 @@
+{
+  "subgraph": "Cart Drawer Capabilities Graph",
+  "version": "1.0.0",
+  "capabilities": [
+    {
+      "id": "cart.shipping.free_shipping_progress",
+      "name": "Free Shipping Progress Bar",
+      "legacy_sources": [
+        "snippets/cart-progress-bar.liquid",
+        "snippets/cart-checkpoints-bar.liquid"
+      ],
+      "data_authority": "Shopify cart.total_price",
+      "cart_mutation": "none",
+      "decision": "ADAPT",
+      "horizon_target": "blocks/free-shipping-progress.liquid",
+      "risk": "Low"
+    },
+    {
+      "id": "cart.trust.badges_and_guarantee",
+      "name": "Trust Badges & Return Guarantee",
+      "legacy_sources": [
+        "snippets/moneybackcheckcart.liquid"
+      ],
+      "data_authority": "Store Policy / Legal Consumer Return Law",
+      "cart_mutation": "none",
+      "decision": "ADAPT",
+      "horizon_target": "blocks/trust-badges.liquid",
+      "risk": "Low"
+    },
+    {
+      "id": "cart.trust.payment_icons",
+      "name": "Payment Method Badges",
+      "legacy_sources": [
+        "blocks/payment-icons.liquid"
+      ],
+      "data_authority": "shop.enabled_payment_types",
+      "cart_mutation": "none",
+      "decision": "REPLACE_WITH_HORIZON_NATIVE",
+      "horizon_target": "Native payment_icons block",
+      "risk": "Low"
+    },
+    {
+      "id": "cart.pricing.volume_discount",
+      "name": "Tiered Volume Discounts",
+      "legacy_sources": [
+        "snippets/cart-fomo-block.liquid"
+      ],
+      "data_authority": "Shopify Functions / Checkout Authority",
+      "cart_mutation": "update",
+      "decision": "DEFER",
+      "horizon_target": "Wave 3 (Product Conversion Runtime)",
+      "risk": "High"
+    },
+    {
+      "id": "cart.delivery.nova_poshta",
+      "name": "Nova Poshta Delivery Options",
+      "legacy_sources": [
+        "snippets/cart-checkpoints-bar.liquid"
+      ],
+      "data_authority": "Shopify Carrier Service / Nova Poshta API",
+      "cart_mutation": "none",
+      "decision": "DEFER",
+      "horizon_target": "Wave 5 (Integrations)",
+      "risk": "Medium"
+    },
+    {
+      "id": "cart.upsell.product_recommendations",
+      "name": "Cart Upsell & Gift Products",
+      "legacy_sources": [
+        "snippets/cart-gift.liquid"
+      ],
+      "data_authority": "Shopify Recommendations API",
+      "cart_mutation": "add",
+      "decision": "DEFER",
+      "horizon_target": "Wave 5 (Integrations)",
+      "risk": "Medium"
+    },
+    {
+      "id": "cart.urgency.countdown_fomo",
+      "name": "Artificial Countdown Timer",
+      "legacy_sources": [
+        "snippets/cart-fomo-block.liquid"
+      ],
+      "data_authority": "Theme display only",
+      "cart_mutation": "none",
+      "decision": "EXCLUDE",
+      "horizon_target": "Excluded per privacy/truthfulness rules",
+      "risk": "High"
+    }
+  ]
+}
