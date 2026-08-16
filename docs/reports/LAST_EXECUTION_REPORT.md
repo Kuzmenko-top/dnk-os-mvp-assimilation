@@ -1,36 +1,58 @@
 # --- DNK-MRH-HEADER ---
-# mrh_id: "DNKOS_MVP/docs/reports/LAST_EXECUTION_REPORT.md"
-# purpose: "Technical report for Antigravity AI regarding DNK-ASSIM-018 Transformers Research & Architecture Assimilation"
+# mrh_id: "LAST_EXECUTION_REPORT.md"
+# purpose: "Technical report for Antigravity AI detailing the successful execution of task DNK-CI-001 (GitHub Actions CI Stabilization)"
 # author: "DNK-e.com Maksym"
-# license: "MIT"
-# status: "Active"
+# license: "DNK-INTERNAL"
+# status: "Completed"
 # version: "1.0.0"
-# updated_at: "2026-08-16"
+# updated_at: "2026-08-15"
 # --- END DNK-MRH-HEADER ---
 
-# Technical Execution Report: DNK-ASSIM-018
+# Technical Execution Report: GitHub Actions CI Stabilization (DNK-CI-001)
 
-## Task Identification
-- **TASK_ID:** `DNK-ASSIM-018`
-- **SESSION_OWNER:** `DNK_MENTOR`
-- **DOMAIN:** `langchain`
-- **REPOSITORY:** `DNKOS_MVP`
-- **BASE_BRANCH:** `main`
-- **TARGET_BRANCH:** `mentor/langchain/DNK-ASSIM-018-transformers-research`
-- **DATE:** `2026-08-16`
+## 📌 Executive Summary
+Task **DNK-CI-001** has been fully executed. The GitHub Actions workflows (`deploy.yml` and `test-hygiene.yml`) were refactored and standardized to eliminate non-deterministic dependency installation (`uv pip install --system -r pyproject.toml` and direct `pip install pytest`). Both pipelines now run on Python 3.12 with `astral-sh/setup-uv@v5` (v0.8.17) and deterministic dependency resolution via `uv sync --frozen --group dev`.
 
-## Executive Summary
-Executed SOTA R&D assimilation for `huggingface/transformers` (119k+ stars, Apache 2.0 license). Extracted core architectural paradigms including Model Architectures (Encoder BERT/RoBERTa, Decoder GPT/LLaMA, Seq2Seq T5), Subword Tokenizers (BPE, WordPiece, SentencePiece, Fast Rust tokenizers), 3-Stage Pipeline Abstraction (Preprocess -> Forward -> Postprocess), Immutable Model Config System, and Dynamic Model Hub Auto-Classes (`AutoModel`, `AutoTokenizer`, `AutoConfig`).
+**Base Branch**: `main` (`53aee1ca90c9078a782764d7b1d4fcbbb925017b`)
+**Work Branch**: `mentor/core/DNK-CI-001-github-actions-stabilization`
 
-## Artifacts Generated & Delivered
-1. `docs/reports/rd_assimilation/langchain/RN-018_transformers-research.md` — Detailed research report on `huggingface/transformers`.
-2. `docs/tech/specs/DNK-ARCH-018_transformers-patterns.md` — System topology and extracted architecture patterns.
-3. `docs/tech/specs/DNK-COMP-018_transformers-contracts.md` — Data schemas and Pydantic/ABC component contracts.
-4. `skills/transformers_assimilated/SKILL.md` — Thin Index + Recipes skill standard conforming to `DNK-SKILL-STD-001`.
-5. `docs/reports/DNK-ASSIM-018_handoff.md` — Task handoff report.
-6. `docs/reports/LAST_EXECUTION_REPORT.md` — Technical report for Antigravity AI.
+---
 
-## Compliance & Governance Gates Verification
-- **Author Header:** `# author: "DNK-e.com Maksym"` injected into all files.
-- **Path Hygiene:** `pytest tests/verification/test_path_hygiene.py` executed (PASS).
-- **Assimilation Export:** `./scripts/export-assimilation.sh` executed successfully.
+## 🏗️ Key Technical Changes
+
+### 1. `pyproject.toml` & `uv.lock` Updates
+*   Raised Python baseline requirement to `>=3.12`.
+*   Added PEP 735 dependency group `[dependency-groups]` with `dev` group containing `pytest>=8.0.0`, `pytest-asyncio>=0.23.0`, and `pyyaml>=6.0.0`.
+*   Added `[tool.pytest.ini_options]` configuration establishing `DNKOS_MVP/pyproject.toml` as explicit root configuration file for `pytest`.
+*   Regenerated `uv.lock` via `uv lock` and verified with `uv lock --check`.
+
+### 2. Workflow Refactoring (`deploy.yml`)
+*   Fixed Python version to `3.12`.
+*   Added `astral-sh/setup-uv@v5` step specifying version `0.8.17`.
+*   Replaced imperative `pip` and `uv pip` commands with `uv sync --frozen --group dev`.
+*   Standardized verification step to `PYTHONPATH=. uv run pytest tests/verification/test_path_hygiene.py`.
+
+### 3. Workflow Refactoring (`test-hygiene.yml`)
+*   Updated Python version from `3.11` to `3.12`.
+*   Integrated `astral-sh/setup-uv@v5` (v0.8.17).
+*   Replaced imperative `pip install pytest` with `uv sync --frozen --group dev`.
+*   Set `PYTHONPATH=. uv run pytest tests/verification/test_path_hygiene.py`.
+
+---
+
+## 🧪 Local Verification & Diagnostics
+
+1.  **YAML Validation**:
+    Verified valid YAML syntax for both workflow files using `pyyaml`.
+2.  **UV Lock Check**:
+    ```bash
+    uv lock --check
+    # Output: Resolved 83 packages in 29ms (Valid)
+    ```
+3.  **Local Test Run**:
+    ```bash
+    PYTHONPATH=. uv run pytest tests/verification/test_path_hygiene.py
+    # Output: 1 passed in 0.40s
+    ```
+4.  **Scope Verification**:
+    Confirmed zero changes outside permitted scope. No runtime code, RAG, or Canvas API files were altered. PR #3 remains untouched.
