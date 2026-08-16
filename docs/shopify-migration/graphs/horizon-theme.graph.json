@@ -1,0 +1,80 @@
+{
+  "theme": "DNK eCom Horizon 3.0 / Tinker",
+  "version": "4.3.1",
+  "nodes": [
+    {
+      "id": "layout/theme.liquid",
+      "type": "layout",
+      "name": "Horizon Theme Layout",
+      "source_theme": "horizon",
+      "runtime_criticality": "critical"
+    },
+    {
+      "id": "sections/cart-drawer-section.liquid",
+      "type": "section",
+      "name": "Cart Drawer Section Target",
+      "source_theme": "horizon",
+      "runtime_criticality": "critical"
+    },
+    {
+      "id": "snippets/cart-drawer.liquid",
+      "type": "snippet",
+      "name": "Cart Drawer Snippet",
+      "source_theme": "horizon",
+      "runtime_criticality": "critical"
+    },
+    {
+      "id": "assets/cart-drawer.js",
+      "type": "asset_js",
+      "name": "<cart-drawer-component> Web Component",
+      "source_theme": "horizon",
+      "runtime_criticality": "critical"
+    },
+    {
+      "id": "blocks/free-shipping-progress.liquid",
+      "type": "theme_block",
+      "name": "Free Shipping Progress Theme Block",
+      "source_theme": "horizon",
+      "runtime_criticality": "high"
+    },
+    {
+      "id": "blocks/trust-badges.liquid",
+      "type": "theme_block",
+      "name": "Trust Badges Theme Block",
+      "source_theme": "horizon",
+      "runtime_criticality": "medium"
+    }
+  ],
+  "edges": [
+    {
+      "source": "layout/theme.liquid",
+      "target": "snippets/cart-drawer.liquid",
+      "type": "renders",
+      "confidence": "high"
+    },
+    {
+      "source": "sections/cart-drawer-section.liquid",
+      "target": "snippets/cart-drawer.liquid",
+      "type": "renders",
+      "confidence": "high"
+    },
+    {
+      "source": "snippets/cart-drawer.liquid",
+      "target": "assets/cart-drawer.js",
+      "type": "requires",
+      "confidence": "high"
+    },
+    {
+      "source": "snippets/cart-drawer.liquid",
+      "target": "blocks/free-shipping-progress.liquid",
+      "type": "exposes",
+      "confidence": "high"
+    },
+    {
+      "source": "snippets/cart-drawer.liquid",
+      "target": "blocks/trust-badges.liquid",
+      "type": "exposes",
+      "confidence": "high"
+    }
+  ]
+}

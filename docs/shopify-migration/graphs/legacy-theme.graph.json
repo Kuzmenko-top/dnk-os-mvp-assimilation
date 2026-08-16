@@ -1,0 +1,88 @@
+{
+  "theme": "DNK Ecom v1.0.0 (Legacy)",
+  "version": "1.0.0",
+  "nodes": [
+    {
+      "id": "layout/theme.liquid",
+      "type": "layout",
+      "name": "Main Layout",
+      "source_theme": "legacy",
+      "runtime_criticality": "critical"
+    },
+    {
+      "id": "sections/cart-drawer.liquid",
+      "type": "section",
+      "name": "Legacy Cart Drawer Pinned Section",
+      "source_theme": "legacy",
+      "runtime_criticality": "critical"
+    },
+    {
+      "id": "snippets/cart-drawer.liquid",
+      "type": "snippet",
+      "name": "Cart Drawer Drawer Shell",
+      "source_theme": "legacy",
+      "runtime_criticality": "critical"
+    },
+    {
+      "id": "snippets/cart-progress-bar.liquid",
+      "type": "snippet",
+      "name": "Free Shipping Progress Bar",
+      "source_theme": "legacy",
+      "runtime_criticality": "high"
+    },
+    {
+      "id": "snippets/moneybackcheckcart.liquid",
+      "type": "snippet",
+      "name": "Trust Badges & Moneyback Guarantee",
+      "source_theme": "legacy",
+      "runtime_criticality": "medium"
+    },
+    {
+      "id": "snippets/trust-pilot-reviews-cart.liquid",
+      "type": "snippet",
+      "name": "Trustpilot Reviews",
+      "source_theme": "legacy",
+      "runtime_criticality": "low"
+    },
+    {
+      "id": "snippets/estimated-shipping-cart-block.liquid",
+      "type": "snippet",
+      "name": "Estimated Shipping",
+      "source_theme": "legacy",
+      "runtime_criticality": "medium"
+    },
+    {
+      "id": "snippets/cartcongratsmessage.liquid",
+      "type": "snippet",
+      "name": "Congrats Message",
+      "source_theme": "legacy",
+      "runtime_criticality": "low"
+    }
+  ],
+  "edges": [
+    {
+      "source": "layout/theme.liquid",
+      "target": "sections/cart-drawer.liquid",
+      "type": "renders",
+      "confidence": "high"
+    },
+    {
+      "source": "sections/cart-drawer.liquid",
+      "target": "snippets/cart-drawer.liquid",
+      "type": "includes",
+      "confidence": "high"
+    },
+    {
+      "source": "snippets/cart-drawer.liquid",
+      "target": "snippets/cart-progress-bar.liquid",
+      "type": "includes",
+      "confidence": "high"
+    },
+    {
+      "source": "snippets/cart-drawer.liquid",
+      "target": "snippets/moneybackcheckcart.liquid",
+      "type": "includes",
+      "confidence": "high"
+    }
+  ]
+}

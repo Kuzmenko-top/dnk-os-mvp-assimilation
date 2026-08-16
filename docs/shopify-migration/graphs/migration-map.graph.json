@@ -1,0 +1,28 @@
+{
+  "mappings": [
+    {
+      "capability_id": "cart_free_shipping_progress",
+      "legacy_source": "snippets/cart-progress-bar.liquid",
+      "target_type": "theme_block",
+      "target_path": "blocks/free-shipping-progress.liquid",
+      "decision": "ADAPT",
+      "pattern": "Recipe A v2 (Cart Drawer-Aware Interactive Theme Block)"
+    },
+    {
+      "capability_id": "cart_trust_badges",
+      "legacy_source": "snippets/moneybackcheckcart.liquid",
+      "target_type": "theme_block",
+      "target_path": "blocks/trust-badges.liquid",
+      "decision": "ADAPT",
+      "pattern": "Recipe B (Static / Repeater Content Theme Block)"
+    },
+    {
+      "capability_id": "cart_shell_container",
+      "legacy_source": "sections/cart-drawer.liquid",
+      "target_type": "native_section",
+      "target_path": "sections/cart-drawer-section.liquid",
+      "decision": "REPLACE_WITH_HORIZON_NATIVE",
+      "pattern": "Horizon Native <cart-drawer-component>"
+    }
+  ]
+}
