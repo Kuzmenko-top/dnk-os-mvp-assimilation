@@ -9,16 +9,16 @@ Meta-index tracking role-based agents, task sequences, and hybrid crews.
 
 ## 📁 Core Specifications
 
-1. **[Research & Evidence Trail](./references/RN-006_crewai-research.md)**
+1. **[Research & Evidence Trail](./references/RN-020_crewai-research.md)**
    - Analysis of `crewAIInc/crewAI` for persona-driven loops.
 
-2. **[Multi-Agent Patterns](./references/DNK-ARCH-006_crewai-multi-agent-patterns.md)**
+2. **[Multi-Agent Patterns](./references/DNK-ARCH-020_crewai-patterns.md)**
    - Hybrid graph/linear pipeline topologies and Role/Goal/Backstory models.
 
-3. **[Component State Contracts](./references/DNK-COMP-006_crewai-interfaces.md)**
+3. **[Component State Contracts](./references/DNK-COMP-020_crewai-contracts.md)**
    - Python interfaces (`DNKCrewAgentPort`, `DNKCrewOrchestratorPort`).
 
-4. **[Sandbox Execution Security](./references/DNK-SEC-006_crewai-execution-sandbox.md)**
+4. **[Sandbox Execution Security](./references/DNK-SEC-020_crewai-execution-sandbox.md)**
    - Agent limits, memory caps, and task depth boundaries.
 
 ## 📁 Structure
@@ -29,10 +29,10 @@ Meta-index tracking role-based agents, task sequences, and hybrid crews.
 - `resources/` — діаграми взаємодії та супровідні лінки.
 
 Основна документація:
-- [RN-006](../../docs/reports/rd_assimilation/crewai/RN-006_crewai-research.md)
-- [DNK-ARCH-006](../../docs/tech/specs/DNK-ARCH-006_crewai-multi-agent-patterns.md)
-- [DNK-COMP-006](../../docs/tech/specs/DNK-COMP-006_crewai-interfaces.md)
-- [DNK-SEC-006](../../docs/tech/standards/DNK-SEC-006_crewai-execution-sandbox.md)
+- [RN-020](../../docs/reports/rd_assimilation/langchain/RN-020_crewai-research.md)
+- [DNK-ARCH-020](../../docs/tech/specs/DNK-ARCH-020_crewai-patterns.md)
+- [DNK-COMP-020](../../docs/tech/specs/DNK-COMP-020_crewai-contracts.md)
+- [DNK-SEC-020](../../docs/tech/standards/DNK-SEC-020_crewai-execution-sandbox.md)
 
 ## 🧪 Quick Recipes
 
