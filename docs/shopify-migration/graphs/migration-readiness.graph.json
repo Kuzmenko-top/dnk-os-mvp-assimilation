@@ -1,0 +1,61 @@
+{
+  "graph_id": "migration-readiness",
+  "mrh_header": {
+    "mrh_id": "docs/shopify-migration/graphs/migration-readiness.graph.json",
+    "purpose": "Molecular Graph of Waves 1 through 6 Dependencies and Migration Gate State",
+    "canonical_source": true,
+    "status": "Active",
+    "version": "1.0.0",
+    "updated_at": "2026-08-22",
+    "author": "DNK-e.com Maksym"
+  },
+  "nodes": [
+    {
+      "id": "wave_1b_cart",
+      "label": "Wave 1B/2A Cart Drawer Parity",
+      "status": "PASSED"
+    },
+    {
+      "id": "wave_3_pdp",
+      "label": "Wave 3/3.2 PDP Runtime & Volume Pricing",
+      "status": "PASSED"
+    },
+    {
+      "id": "wave_4_plp",
+      "label": "Wave 4/4A PLP Runtime & Merchandising",
+      "status": "PASSED"
+    },
+    {
+      "id": "wave_5_integrations",
+      "label": "Wave 5 External Integration Contracts",
+      "status": "PASSED"
+    },
+    {
+      "id": "wave_6_readiness_gate",
+      "label": "Wave 6 Regression & Migration Readiness Gate",
+      "status": "PASSED"
+    }
+  ],
+  "edges": [
+    {
+      "source": "wave_1b_cart",
+      "target": "wave_6_readiness_gate",
+      "relationship": "validated_in_gate"
+    },
+    {
+      "source": "wave_3_pdp",
+      "target": "wave_6_readiness_gate",
+      "relationship": "validated_in_gate"
+    },
+    {
+      "source": "wave_4_plp",
+      "target": "wave_6_readiness_gate",
+      "relationship": "validated_in_gate"
+    },
+    {
+      "source": "wave_5_integrations",
+      "target": "wave_6_readiness_gate",
+      "relationship": "validated_in_gate"
+    }
+  ]
+}
