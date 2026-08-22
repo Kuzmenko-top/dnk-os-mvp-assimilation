@@ -1,37 +1,23 @@
-# --- DNK-MRH-HEADER ---
-# mrh_id: "DNKOS_MVP/docs/reports/LAST_EXECUTION_REPORT.md"
-# purpose: "Technical Execution Report for Antigravity AI Orchestrator"
+# Architecture Note: Hermes Agent Core Orchestration
 # author: "DNK-e.com Maksym"
-# license: "MIT"
-# canonical_source: true
-# alters_files: []
-# triggers_tasks: []
-# status: "Active"
-# version: "1.0.0"
-# updated_at: "2026-08-16"
-# --- END DNK-MRH-HEADER ---
+# date: "2026-08-18"
+# target: "Antigravity AI Lead Architect"
 
-# 📊 TECHNICAL EXECUTION REPORT: DNK-ASSIM-020
+## 1. Core Architecture Overview
+The Hermes Agent core orchestration layer (`core/hermes_agent/agent/`) operates as a modular, stateful cognitive engine designed for autonomous multi-turn problem solving, tool execution, context compression, and subagent swarm coordination.
 
-## 📌 Executive Summary
-- **Task ID:** DNK-ASSIM-020
-- **Domain:** langchain
-- **Target Repository:** `crewAIInc/crewAI`
-- **Target Branch:** `mentor/langchain/DNK-ASSIM-020-crewai-research`
-- **Execution Engine:** Gerych (herich_librarian)
-- **Status:** COMPLETED / VERIFIED
-
----
-
-## 🛠️ Key Technical Deliverables Created
-1. **Research Report (`RN-020_crewai-research.md`):** Comprehensive analysis of crewAI role-based personas (role/goal/backstory), sequential/hierarchical process models, inter-agent delegation protocols, sequential context passing, and multi-layered memory (short-term, long-term, entity).
-2. **Architecture Specification (`DNK-ARCH-020_crewai-patterns.md`):** Structural model of crew execution pipelines, hierarchical manager orchestration, peer consultation loops, and Hybrid LangGraph Master + Crew Leaf Pipelines architecture.
-3. **Component Contracts (`DNK-COMP-020_crewai-contracts.md`):** Clean-room abstract Python interfaces using `abc.ABC` and `@abstractmethod` defining boundaries for BaseAgent, BaseTask, BaseCrew, BaseMemoryStore, and CrewOutput.
-4. **Assimilated Skill (`skills/crewai_assimilated/SKILL.md`):** Thin index skill strictly conforming to `DNK-SKILL-STD-001` (< 50 lines) with physical forwarders and quickstart recipes.
-
----
-
-## 🧪 Verification & Hygiene Audit
-- **Path Hygiene Test:** Executed `pytest tests/verification/test_path_hygiene.py` with zero path leaks. Result: **100% PASS**.
-- **Assimilation Export:** Executed `./scripts/export-assimilation.sh`. Successfully pushed updated specifications to `dnk-os-mvp-assimilation`.
-- **MRH Header Audit:** All new files verified with mandatory `# author: "DNK-e.com Maksym"` headers.
+## 2. Key Subsystems
+1. **Conversation Execution Loop (`conversation_loop.py`)**:
+   - Manages state machine across turns, model queries, streaming tokens, and prompt construction.
+   - Handles mid-turn steering (`[OUT-OF-BAND USER MESSAGE]`) and iteration budgets.
+2. **Unified Tool & MCP Dispatcher (`tool_executor.py`, `toolsets.py`)**:
+   - Combines Native System Tools, Deferred On-Demand Tools (`tool_search`/`tool_describe`/`tool_call`), and dynamic MCP stdio/HTTP servers.
+   - Enforces batch parallelism for independent tool invocations.
+3. **Subagent Swarm & Delegation Engine (`delegate_task`)**:
+   - Spawns background worker agents in isolated sub-processes.
+   - Dynamically binds models via `router_matrix.json`.
+   - Supports mid-flight steering and structured output validation (`output_schema`).
+4. **Adaptive Context Compressor (`context_compressor.py`)**:
+   - Protects initial context (anchor goals) and recent execution history while compressing intermediate tool payloads.
+5. **Dual-Tier State & Retrieval (`state.db`, `memory_manager.py`, FTS5)**:
+   - Persistent key-value memory (`user` + `memory`), session index search, and cron scheduler.
