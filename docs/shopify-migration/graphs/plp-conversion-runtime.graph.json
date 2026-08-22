@@ -1,0 +1,99 @@
+{
+  "graph_id": "plp-conversion-runtime",
+  "mrh_header": {
+    "mrh_id": "docs/shopify-migration/graphs/plp-conversion-runtime.graph.json",
+    "purpose": "Molecular Graph Representation of Collection PLP Conversion Runtime Architecture",
+    "canonical_source": true,
+    "status": "Active",
+    "version": "1.0.0",
+    "updated_at": "2026-08-22",
+    "author": "DNK-e.com Maksym"
+  },
+  "nodes": [
+    {
+      "id": "template_collection",
+      "label": "templates/collection.json",
+      "type": "template",
+      "owner": "Horizon Native"
+    },
+    {
+      "id": "section_main_collection",
+      "label": "sections/main-collection.liquid",
+      "type": "section",
+      "owner": "Horizon Native"
+    },
+    {
+      "id": "block_filters",
+      "label": "blocks/filters.liquid",
+      "type": "block",
+      "owner": "Horizon Native"
+    },
+    {
+      "id": "snippet_facets_js",
+      "label": "assets/facets.js",
+      "type": "javascript",
+      "owner": "Horizon Native"
+    },
+    {
+      "id": "snippet_product_grid",
+      "label": "snippets/product-grid.liquid",
+      "type": "snippet",
+      "owner": "Horizon Native"
+    },
+    {
+      "id": "block_product_card",
+      "label": "blocks/_product-card.liquid",
+      "type": "block",
+      "owner": "Horizon Native"
+    },
+    {
+      "id": "snippet_quick_add",
+      "label": "snippets/quick-add.liquid",
+      "type": "snippet",
+      "owner": "Horizon Native"
+    },
+    {
+      "id": "cart_drawer_adapter",
+      "label": "dnk-cart-drawer-adapter",
+      "type": "adapter",
+      "owner": "DNK OS Compatibility Layer"
+    }
+  ],
+  "edges": [
+    {
+      "source": "template_collection",
+      "target": "section_main_collection",
+      "relationship": "renders"
+    },
+    {
+      "source": "section_main_collection",
+      "target": "block_filters",
+      "relationship": "includes_block"
+    },
+    {
+      "source": "block_filters",
+      "target": "snippet_facets_js",
+      "relationship": "binds_behavior"
+    },
+    {
+      "source": "section_main_collection",
+      "target": "snippet_product_grid",
+      "relationship": "renders_grid"
+    },
+    {
+      "source": "snippet_product_grid",
+      "target": "block_product_card",
+      "relationship": "renders_cards"
+    },
+    {
+      "source": "block_product_card",
+      "target": "snippet_quick_add",
+      "relationship": "contains_trigger"
+    },
+    {
+      "source": "snippet_quick_add",
+      "target": "cart_drawer_adapter",
+      "relationship": "dispatches_cart_update_event"
+    }
+  ]
+}
