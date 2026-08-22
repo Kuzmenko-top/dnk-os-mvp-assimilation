@@ -1,37 +1,47 @@
-# --- DNK-MRH-HEADER ---
-# mrh_id: "DNKOS_MVP/docs/reports/LAST_EXECUTION_REPORT.md"
-# purpose: "Technical Execution Report for Antigravity AI Orchestrator"
 # author: "DNK-e.com Maksym"
-# license: "MIT"
-# canonical_source: true
-# alters_files: []
-# triggers_tasks: []
-# status: "Active"
-# version: "1.0.0"
-# updated_at: "2026-08-16"
-# --- END DNK-MRH-HEADER ---
+# purpose: "Technical Report for Antigravity AI on Task DNK-SHOPIFY-007 PDP Conversion Runtime Discovery"
+# mrh_id: "LAST_EXECUTION_REPORT"
+# status: "ACTIVE"
+# created_at: "2026-08-22"
 
-# 📊 TECHNICAL EXECUTION REPORT: DNK-ASSIM-020
+# TECHNICAL EXECUTION REPORT: DNK-SHOPIFY-007
 
-## 📌 Executive Summary
-- **Task ID:** DNK-ASSIM-020
-- **Domain:** langchain
-- **Target Repository:** `crewAIInc/crewAI`
-- **Target Branch:** `mentor/langchain/DNK-ASSIM-020-crewai-research`
-- **Execution Engine:** Gerych (herich_librarian)
-- **Status:** COMPLETED / VERIFIED
+**Task ID**: DNK-SHOPIFY-007  
+**Task Slug**: product-conversion-runtime-discovery  
+**Domain**: shopify  
+**Phase**: wave_3_discovery  
+**Governance Branch**: mentor/shopify/DNK-SHOPIFY-007-product-conversion-runtime  
+**Delivery Head SHA**: 6465ba0e7f79d98a29484049c65827ffe6b22032  
 
 ---
 
-## 🛠️ Key Technical Deliverables Created
-1. **Research Report (`RN-020_crewai-research.md`):** Comprehensive analysis of crewAI role-based personas (role/goal/backstory), sequential/hierarchical process models, inter-agent delegation protocols, sequential context passing, and multi-layered memory (short-term, long-term, entity).
-2. **Architecture Specification (`DNK-ARCH-020_crewai-patterns.md`):** Structural model of crew execution pipelines, hierarchical manager orchestration, peer consultation loops, and Hybrid LangGraph Master + Crew Leaf Pipelines architecture.
-3. **Component Contracts (`DNK-COMP-020_crewai-contracts.md`):** Clean-room abstract Python interfaces using `abc.ABC` and `@abstractmethod` defining boundaries for BaseAgent, BaseTask, BaseCrew, BaseMemoryStore, and CrewOutput.
-4. **Assimilated Skill (`skills/crewai_assimilated/SKILL.md`):** Thin index skill strictly conforming to `DNK-SKILL-STD-001` (< 50 lines) with physical forwarders and quickstart recipes.
+## 1. Execution Summary
+
+Gerych executed Wave 3 Discovery for the **Product Conversion Runtime** across the legacy theme (`DNK_Ecom_v1_0_0`) and the target Horizon-based theme (`DNK-e.com`).
+
+All 7 core PDP runtime components were mapped and evaluated:
+1. Product Template (`templates/product.json`)
+2. Main Product Section & Information Blocks (`sections/product-information.liquid`, `blocks/product-title.liquid`, `blocks/price.liquid`, `blocks/variant-picker.liquid`, `blocks/quantity.liquid`, `blocks/product-inventory.liquid`, `blocks/buy-buttons.liquid`)
+3. Variant Picker Lifecycle (`assets/variant-picker.js`, `assets/variant-resolution.js`)
+4. Quantity Selector Lifecycle (`assets/component-quantity-selector.js`)
+5. Dynamic Price Renderer (`assets/product-price.js`, `assets/price-per-item.js`, `snippets/format-price.liquid`)
+6. Buy Buttons & Product Form (`<product-form>`)
+7. Add-to-Cart to Cart Drawer Event Handoff (`assets/product-form.js` dispatching `cart:updated`)
 
 ---
 
-## 🧪 Verification & Hygiene Audit
-- **Path Hygiene Test:** Executed `pytest tests/verification/test_path_hygiene.py` with zero path leaks. Result: **100% PASS**.
-- **Assimilation Export:** Executed `./scripts/export-assimilation.sh`. Successfully pushed updated specifications to `dnk-os-mvp-assimilation`.
-- **MRH Header Audit:** All new files verified with mandatory `# author: "DNK-e.com Maksym"` headers.
+## 2. Price Authority & Volume Discount Governance Verdict
+
+A rigorous price authority audit was conducted on legacy `snippets/quantity-breaks.liquid`:
+- **Authority Finding**: `no_verified_authority`.
+- **Root Cause**: The legacy theme calculates quantity discount tiers purely via frontend Liquid math and custom JS DOM updates based on Theme Customizer block settings. It lacks backend checkout enforcement via Shopify Functions or Automatic Discount rules.
+- **Governance Decision**: `DISPLAY_ONLY_MANUAL_REVIEW`.
+- **Implementation Status**: **FORBIDDEN** in theme Liquid code.
+- **Horizon Standard**: Native Horizon `snippets/volume-pricing-info.liquid` reading `variant.quantity_price_breaks` and `variant.quantity_rule` is adopted as the exclusive standard when backend B2B or Shopify Functions are active.
+
+---
+
+## 3. Governance & Quality Verification
+
+- **Theme Code Integrity**: 0 modifications, 0 commits, 0 pushes to `services/dnk_shopify/DNK-e.com`.
+- **Governance Repository**: All 6 required artifacts successfully generated, formatted with mandatory MRH headers (`# author: "DNK-e.com Maksym"`), and committed to `dnk-os-mvp-assimilation-work` on branch `mentor/shopify/DNK-SHOPIFY-007-product-conversion-runtime`.

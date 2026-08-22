@@ -1,0 +1,79 @@
+{
+  "subgraph": "PDP Conversion Runtime Graph",
+  "version": "1.0.0",
+  "task_id": "DNK-SHOPIFY-007",
+  "components": [
+    {
+      "id": "pdp.template",
+      "name": "Product Template Resolution",
+      "legacy_source": "templates/product.json",
+      "horizon_target": "templates/product.json",
+      "data_authority": "Shopify Theme Engine",
+      "decision": "ADAPT_HORIZON_NATIVE",
+      "risk": "Low"
+    },
+    {
+      "id": "pdp.section.product_information",
+      "name": "Main Product Section & Blocks",
+      "legacy_source": "sections/main-product.liquid",
+      "horizon_target": "sections/product-information.liquid",
+      "data_authority": "Shopify Section Rendering API",
+      "decision": "ADAPT_HORIZON_NATIVE",
+      "risk": "Low"
+    },
+    {
+      "id": "pdp.variant.picker",
+      "name": "Variant Picker & Swatches",
+      "legacy_source": "snippets/product-variant-picker.liquid",
+      "horizon_target": "blocks/variant-picker.liquid + assets/variant-picker.js",
+      "data_authority": "product.variants",
+      "decision": "ADAPT_HORIZON_NATIVE",
+      "risk": "Low"
+    },
+    {
+      "id": "pdp.quantity.selector",
+      "name": "Quantity Selector & Rules",
+      "legacy_source": "snippets/quantity-input.liquid",
+      "horizon_target": "blocks/quantity.liquid + assets/component-quantity-selector.js",
+      "data_authority": "variant.quantity_rule",
+      "decision": "ADAPT_HORIZON_NATIVE",
+      "risk": "Low"
+    },
+    {
+      "id": "pdp.price.renderer",
+      "name": "Dynamic Price Renderer",
+      "legacy_source": "snippets/price.liquid",
+      "horizon_target": "blocks/price.liquid + assets/product-price.js",
+      "data_authority": "variant.price / shop.money_format",
+      "decision": "ADAPT_HORIZON_NATIVE",
+      "risk": "Low"
+    },
+    {
+      "id": "pdp.buy_buttons.form",
+      "name": "Buy Buttons & Add-To-Cart Form",
+      "legacy_source": "sections/main-product.liquid <product-form>",
+      "horizon_target": "blocks/buy-buttons.liquid + assets/product-form.js",
+      "data_authority": "Shopify /cart/add.js",
+      "decision": "ADAPT_HORIZON_NATIVE",
+      "risk": "Low"
+    },
+    {
+      "id": "pdp.cart.handoff",
+      "name": "ATC to Cart Drawer Event Handoff",
+      "legacy_source": "Custom notification / drawer trigger JS",
+      "horizon_target": "assets/product-form.js dispatching cart:updated event to cart-drawer",
+      "data_authority": "Cart Drawer Web Component",
+      "decision": "RETAIN_HORIZON_NATIVE",
+      "risk": "Low"
+    },
+    {
+      "id": "pdp.pricing.volume_discount",
+      "name": "Legacy Volume Discounts / Quantity Breaks",
+      "legacy_source": "snippets/quantity-breaks.liquid",
+      "horizon_target": "snippets/volume-pricing-info.liquid (Conditional Native B2B / Functions)",
+      "data_authority": "no_verified_authority (Legacy theme Liquid display-only)",
+      "decision": "DISPLAY_ONLY_MANUAL_REVIEW",
+      "risk": "High"
+    }
+  ]
+}
