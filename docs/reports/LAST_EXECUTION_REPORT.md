@@ -1,23 +1,24 @@
-# Architecture Note: Hermes Agent Core Orchestration
 # author: "DNK-e.com Maksym"
-# date: "2026-08-18"
-# target: "Antigravity AI Lead Architect"
+# purpose: "Technical Report for Antigravity AI on Task DNK-SHOPIFY-008 Horizon PDP Native Block Composition"
+# mrh_id: "LAST_EXECUTION_REPORT"
+# status: "ACTIVE"
+# created_at: "2026-08-22"
 
-## 1. Core Architecture Overview
-The Hermes Agent core orchestration layer (`core/hermes_agent/agent/`) operates as a modular, stateful cognitive engine designed for autonomous multi-turn problem solving, tool execution, context compression, and subagent swarm coordination.
+# TECHNICAL EXECUTION REPORT: DNK-SHOPIFY-008
 
-## 2. Key Subsystems
-1. **Conversation Execution Loop (`conversation_loop.py`)**:
-   - Manages state machine across turns, model queries, streaming tokens, and prompt construction.
-   - Handles mid-turn steering (`[OUT-OF-BAND USER MESSAGE]`) and iteration budgets.
-2. **Unified Tool & MCP Dispatcher (`tool_executor.py`, `toolsets.py`)**:
-   - Combines Native System Tools, Deferred On-Demand Tools (`tool_search`/`tool_describe`/`tool_call`), and dynamic MCP stdio/HTTP servers.
-   - Enforces batch parallelism for independent tool invocations.
-3. **Subagent Swarm & Delegation Engine (`delegate_task`)**:
-   - Spawns background worker agents in isolated sub-processes.
-   - Dynamically binds models via `router_matrix.json`.
-   - Supports mid-flight steering and structured output validation (`output_schema`).
-4. **Adaptive Context Compressor (`context_compressor.py`)**:
-   - Protects initial context (anchor goals) and recent execution history while compressing intermediate tool payloads.
-5. **Dual-Tier State & Retrieval (`state.db`, `memory_manager.py`, FTS5)**:
-   - Persistent key-value memory (`user` + `memory`), session index search, and cron scheduler.
+**Task ID**: DNK-SHOPIFY-008  
+**Task Slug**: horizon-pdp-native-block-composition-and-volume-pricing-gate  
+**Domain**: shopify  
+**Phase**: wave_3_2_native_pdp_adaptation  
+**Governance Branch**: mentor/shopify/DNK-SHOPIFY-008-horizon-pdp-native-composition  
+**Delivery Head SHA**: 6465ba0e7f79d98a29484049c65827ffe6b22032  
+
+---
+
+## 1. Execution Overview
+
+Gerych executed Wave 3.2 Horizon PDP Block Adaptation and Volume Pricing Governance Gate:
+1. Validated that all core PDP interactive components (`variant-picker`, `quantity`, `price`, `buy-buttons`, `product-form`, `product-price`, `variant-resolution`) remain 100% native Horizon implementations.
+2. Created compatibility block `blocks/dnk-volume-pricing-info.liquid` in `DNK-e.com` to enable Theme Editor placement of native `volume-pricing-info` with strict conditional rendering (`variant.quantity_price_breaks.size > 0`).
+3. Enforced governance rules: legacy `snippets/quantity-breaks.liquid` is completely excluded; zero frontend price manipulation.
+4. Generated all 4 migration specification, validation, and handoff reports.
