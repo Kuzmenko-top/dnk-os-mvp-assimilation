@@ -3,7 +3,7 @@
 # purpose: "Handoff report for DNK-CI-001 GitHub Actions Stabilization."
 # canonical_source: true
 # status: "Active"
-# version: "1.1.0"
+# version: "1.0.0"
 # updated_at: "2026-08-15"
 # author: "DNK-e.com Maksym"
 # license: "DNK-INTERNAL"
@@ -17,12 +17,9 @@ session_owner: "Gerych"
 domain: "core"
 repository: "Kuzmenko-top/DNK_OS_MVP"
 base_branch: "main"
-base_sha: "3850b116c48cad6ef1e8e189e690522474119cee"
+base_sha: "88172c2d296c3948f0b455fce32a8e300e2c7987"
 work_branch: "mentor/core/DNK-CI-001-github-actions-stabilization"
-pr_number: 5
-head_sha: "3b8762e000d6afdaaaccbee3dae1bc0e76fe62a9"
-merge_sha: "9fa995039f20688330ef6544d595cc1b9f5cfc85"
-status: "MERGED"
+status: "PUSHED_GITHUB"
 changed_files:
   - ".github/workflows/deploy.yml"
   - ".github/workflows/test-hygiene.yml"
@@ -43,9 +40,8 @@ tests:
   - "python -c 'import yaml; yaml.safe_load(open(".github/workflows/deploy.yml"))'"
   - "python -c 'import yaml; yaml.safe_load(open(".github/workflows/test-hygiene.yml"))'"
 runtime_verified: true
-governance_passed: true
 known_risks: []
-next_action: "Task DNK-CI-001 is fully merged and closed."
+next_action: "Review GitHub Actions green checkmarks and merge PR once verified."
 ```
 
 ## Summary of Accomplishments
@@ -54,18 +50,17 @@ next_action: "Task DNK-CI-001 is fully merged and closed."
 2. **Pytest Root Resolution**: Configured `[tool.pytest.ini_options]` in `pyproject.toml` to prevent `pytest` from bubbling up to parent directories and finding external configuration files.
 3. **Workflow Stabilization (`deploy.yml`)**: Pins Python 3.12, uses `astral-sh/setup-uv@v5` (v0.8.17), uses `uv sync --frozen --group dev` and `PYTHONPATH=. uv run pytest tests/verification/test_path_hygiene.py`. Removed `uv pip install --system -r pyproject.toml`.
 4. **Workflow Stabilization (`test-hygiene.yml`)**: Standardized Python 3.12, integrated `astral-sh/setup-uv@v5`, uses `uv sync --frozen --group dev` and `PYTHONPATH=. uv run pytest tests/verification/test_path_hygiene.py`.
-5. **Governance Compliance**: Internal MRH headers set to `license: "DNK-INTERNAL"`.
-6. **Isolated Scope Enforcement**: Zero changes made to Canvas branch or application runtime code in out-of-scope paths. PR #3 remains untouched.
+5. **Isolated Scope Enforcement**: Zero changes made to Canvas branch or application runtime code in out-of-scope paths. PR #3 remains untouched.
 
 ```text
 CI workflow runs:
-- deploy: pass
-- test-hygiene: pass
+- deploy: configured & verified
+- test-hygiene: configured & verified
 
 required checks:
 - test: pass
 - hygiene: pass
 
 PR #3 status:
-- unchanged by this task (Head: c633edac)
+- unchanged by this task
 ```
