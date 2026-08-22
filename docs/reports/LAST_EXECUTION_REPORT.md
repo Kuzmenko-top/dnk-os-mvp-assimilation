@@ -1,58 +1,29 @@
 # --- DNK-MRH-HEADER ---
 # mrh_id: "LAST_EXECUTION_REPORT.md"
-# purpose: "Technical report for Antigravity AI detailing the successful execution of task DNK-CI-001 (GitHub Actions CI Stabilization)"
+# purpose: "Technical report for Antigravity AI regarding the resume of crashed session 20260815_103602_0cfb86."
+# canonical_source: true
+# status: "Active"
+# version: "1.0.0"
+# updated_at: "2026-08-22"
 # author: "DNK-e.com Maksym"
 # license: "DNK-INTERNAL"
-# status: "Completed"
-# version: "1.0.0"
-# updated_at: "2026-08-15"
 # --- END DNK-MRH-HEADER ---
 
-# Technical Execution Report: GitHub Actions CI Stabilization (DNK-CI-001)
+# Execution Report: Resume Session 20260815_103602_0cfb86
 
-## 📌 Executive Summary
-Task **DNK-CI-001** has been fully executed. The GitHub Actions workflows (`deploy.yml` and `test-hygiene.yml`) were refactored and standardized to eliminate non-deterministic dependency installation (`uv pip install --system -r pyproject.toml` and direct `pip install pytest`). Both pipelines now run on Python 3.12 with `astral-sh/setup-uv@v5` (v0.8.17) and deterministic dependency resolution via `uv sync --frozen --group dev`.
+## Context
+The user requested to resume session `20260815_103602_0cfb86` via CLI command `hermes --resume`.
 
-**Base Branch**: `main` (`88172c2d296c3948f0b455fce32a8e300e2c7987`)
-**Work Branch**: `mentor/core/DNK-CI-001-github-actions-stabilization`
+## Findings
+1. The requested session was not found in the local `state.db` SQLite database.
+2. A crash dump was discovered at `core/orchestrator/agents/herich_librarian/sessions/request_dump_20260815_103602_0cfb86_20260816_162512_259507.json`.
+3. The dump revealed the session crashed with a `non_retryable_client_error` while closing out the task `DNK-CI-001` (GitHub Actions Stabilization) and approving PR #5.
+4. Git history analysis on `DNKOS_MVP` showed that PR #5 was already successfully merged into `main` (`9fa995039f20688330ef6544d595cc1b9f5cfc85`) on Aug 16, 2026.
+5. The `HANDOFF_DNK-CI-001_2026-08-15.md` document was correctly finalized.
 
----
+## Actions Taken
+- Restored `DNKOS_MVP` repository state to `mentor/langchain/DNK-ASSIM-020-crewai-research`.
+- No further code modifications were necessary for `DNK-CI-001` since it was already completed.
 
-## 🏗️ Key Technical Changes
-
-### 1. `pyproject.toml` & `uv.lock` Updates
-*   Raised Python baseline requirement to `>=3.12`.
-*   Added PEP 735 dependency group `[dependency-groups]` with `dev` group containing `pytest>=8.0.0`, `pytest-asyncio>=0.23.0`, and `pyyaml>=6.0.0`.
-*   Added `[tool.pytest.ini_options]` configuration establishing `DNKOS_MVP/pyproject.toml` as explicit root configuration file for `pytest`.
-*   Regenerated `uv.lock` via `uv lock` and verified with `uv lock --check`.
-
-### 2. Workflow Refactoring (`deploy.yml`)
-*   Fixed Python version to `3.12`.
-*   Added `astral-sh/setup-uv@v5` step specifying version `0.8.17`.
-*   Replaced imperative `pip` and `uv pip` commands with `uv sync --frozen --group dev`.
-*   Standardized verification step to `PYTHONPATH=. uv run pytest tests/verification/test_path_hygiene.py`.
-
-### 3. Workflow Refactoring (`test-hygiene.yml`)
-*   Updated Python version from `3.11` to `3.12`.
-*   Integrated `astral-sh/setup-uv@v5` (v0.8.17).
-*   Replaced imperative `pip install pytest` with `uv sync --frozen --group dev`.
-*   Set `PYTHONPATH=. uv run pytest tests/verification/test_path_hygiene.py`.
-
----
-
-## 🧪 Local Verification & Diagnostics
-
-1.  **YAML Validation**:
-    Verified valid YAML syntax for both workflow files using `pyyaml`.
-2.  **UV Lock Check**:
-    ```bash
-    uv lock --check
-    # Output: Resolved 83 packages in 29ms (Valid)
-    ```
-3.  **Local Test Run**:
-    ```bash
-    PYTHONPATH=. uv run pytest tests/verification/test_path_hygiene.py
-    # Output: 1 passed in 0.40s
-    ```
-4.  **Scope Verification**:
-    Confirmed zero changes outside permitted scope. No runtime code, RAG, or Canvas API files were altered. PR #3 remains untouched.
+## Next Steps
+- Inform the user that the task from the crashed session is already fully merged and verified.
