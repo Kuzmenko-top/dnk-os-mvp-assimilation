@@ -1,58 +1,56 @@
 # --- DNK-MRH-HEADER ---
 # mrh_id: "LAST_EXECUTION_REPORT.md"
-# purpose: "Technical report for Antigravity AI detailing the successful execution of task DNK-CI-001 (GitHub Actions CI Stabilization)"
+# purpose: "Technical execution report for Antigravity AI regarding DNK-CANVAS-003 Research Workflow MVP implementation."
+# canonical_source: true
+# status: "Active"
+# version: "1.0.0"
+# updated_at: "2026-08-22"
 # author: "DNK-e.com Maksym"
 # license: "DNK-INTERNAL"
-# status: "Completed"
-# version: "1.0.0"
-# updated_at: "2026-08-15"
 # --- END DNK-MRH-HEADER ---
 
-# Technical Execution Report: GitHub Actions CI Stabilization (DNK-CI-001)
+# Technical Execution Report: DNK-CANVAS-003 Research Workflow MVP
 
-## 📌 Executive Summary
-Task **DNK-CI-001** has been fully executed. The GitHub Actions workflows (`deploy.yml` and `test-hygiene.yml`) were refactored and standardized to eliminate non-deterministic dependency installation (`uv pip install --system -r pyproject.toml` and direct `pip install pytest`). Both pipelines now run on Python 3.12 with `astral-sh/setup-uv@v5` (v0.8.17) and deterministic dependency resolution via `uv sync --frozen --group dev`.
+## Executive Summary
+Successfully implemented and verified the end-to-end DNK Canvas Research Workflow MVP (`competitor → evidence screenshot → Canvas element → Insight → Flower draft`) in `DNKOS_MVP/`.
 
-**Base Branch**: `main` (`3850b116c48cad6ef1e8e189e690522474119cee`)
-**Work Branch**: `mentor/core/DNK-CI-001-github-actions-stabilization`
+## Key Accomplishments
 
----
+### 1. Database Schema & ORM Models (`hub_memory` schema)
+- **`CanvasCompetitor`**: Competitor profiles scoped by `workspace_id`.
+- **`CanvasEvidence`**: Evidence screenshot metadata (`source_url`, `captured_at`, `sha256`, `evidence_status`, `storage_mode: fixture`).
+- **`CanvasInsight`**: Proposed insights (`status: proposed`) carrying source references to evidence and competitors.
+- **`FlowerDraft`**: Task Flower drafts (`status: draft`) linked to parent Insights and Canvas elements.
+- **Alembic Migration**: Created `3c4d5e6f7a8b_canvas_research_workflow.py` revising `security_gates_001`.
 
-## 🏗️ Key Technical Changes
+### 2. API Endpoints (`services/dnk_canvas_api/main.py`)
+- `POST /api/v1/workspaces/{workspace_id}/competitors` & list/get endpoints.
+- `POST /api/v1/workspaces/{workspace_id}/evidence` with SHA-256 deduplication and workspace-level idempotency.
+- `POST /api/v1/canvases/{canvas_id}/elements/{element_id}/evidence` linking asset to element.
+- `POST /api/v1/canvases/{canvas_id}/elements/{element_id}/insights` (creates proposed insight).
+- `POST /api/v1/canvases/{canvas_id}/elements/{element_id}/flowers` (creates flower draft, requires saved insight).
+- `GET /api/v1/canvases/{canvas_id}/elements/{element_id}/research` (aggregate element research).
+- `POST /api/v1/insights/{insight_id}/approve` & `POST /api/v1/flowers/{flower_id}/approve` with agent self-approval prevention (403 Forbidden).
 
-### 1. `pyproject.toml` & `uv.lock` Updates
-*   Raised Python baseline requirement to `>=3.12`.
-*   Added PEP 735 dependency group `[dependency-groups]` with `dev` group containing `pytest>=8.0.0`, `pytest-asyncio>=0.23.0`, and `pyyaml>=6.0.0`.
-*   Added `[tool.pytest.ini_options]` configuration establishing `DNKOS_MVP/pyproject.toml` as explicit root configuration file for `pytest`.
-*   Regenerated `uv.lock` via `uv lock` and verified with `uv lock --check`.
+### 3. Security & Governance
+- **Agent Self-Approval Prevention**: Blocked `X-Actor-Type: agent` from self-approving Insights or Flowers.
+- **Workspace Isolation**: Cross-workspace access checks return 403.
+- **Base64 Prevention**: Screenshots referenced strictly by `asset_id`/`storage_key`, keeping scene JSON lean.
+- **Full Audit Logging**: Emits `competitor_created`, `evidence_added`, `asset_linked`, `insight_created`, and `flower_drafted` audit events.
 
-### 2. Workflow Refactoring (`deploy.yml`)
-*   Fixed Python version to `3.12`.
-*   Added `astral-sh/setup-uv@v5` step specifying version `0.8.17`.
-*   Replaced imperative `pip` and `uv pip` commands with `uv sync --frozen --group dev`.
-*   Standardized verification step to `PYTHONPATH=. uv run pytest tests/verification/test_path_hygiene.py`.
+### 4. Frontend Component
+- Created `ResearchSidebar.tsx` in `visual_shell/open_design/apps/web/src/features/canvas/ResearchSidebar.tsx`.
 
-### 3. Workflow Refactoring (`test-hygiene.yml`)
-*   Updated Python version from `3.11` to `3.12`.
-*   Integrated `astral-sh/setup-uv@v5` (v0.8.17).
-*   Replaced imperative `pip install pytest` with `uv sync --frozen --group dev`.
-*   Set `PYTHONPATH=. uv run pytest tests/verification/test_path_hygiene.py`.
+### 5. Verification & Tests
+- `tests/verification/test_canvas_research_workflow_e2e.py` (5/5 passed).
+- Full Canvas verification suite: 46/46 passed 100% green.
 
----
-
-## 🧪 Local Verification & Diagnostics
-
-1.  **YAML Validation**:
-    Verified valid YAML syntax for both workflow files using `pyyaml`.
-2.  **UV Lock Check**:
-    ```bash
-    uv lock --check
-    # Output: Resolved 83 packages in 29ms (Valid)
-    ```
-3.  **Local Test Run**:
-    ```bash
-    PYTHONPATH=. uv run pytest tests/verification/test_path_hygiene.py
-    # Output: 1 passed in 0.40s
-    ```
-4.  **Scope Verification**:
-    Confirmed zero changes outside permitted scope. No runtime code, RAG, or Canvas API files were altered. PR #3 remains untouched.
+## Files Modified & Created
+- `services/dnk_canvas_api/main.py`
+- `services/dnk_canvas_api/alembic/versions/3c4d5e6f7a8b_canvas_research_workflow.py`
+- `visual_shell/open_design/apps/web/src/features/canvas/canvas.types.ts`
+- `visual_shell/open_design/apps/web/src/features/canvas/ResearchSidebar.tsx`
+- `visual_shell/open_design/apps/web/src/features/canvas/index.ts`
+- `tests/verification/test_canvas_research_workflow_e2e.py`
+- `docs/handoffs/HANDOFF_DNK-CANVAS-003_2026-08-22.md`
+- `docs/reports/LAST_EXECUTION_REPORT.md`
