@@ -1,0 +1,66 @@
+{
+  "graph_id": "external-integrations",
+  "mrh_header": {
+    "mrh_id": "docs/shopify-migration/graphs/external-integrations.graph.json",
+    "purpose": "Molecular Graph of Commerce Integrations, Data Authority, and Service Boundaries",
+    "canonical_source": true,
+    "status": "Active",
+    "version": "1.0.0",
+    "updated_at": "2026-08-22",
+    "author": "DNK-e.com Maksym"
+  },
+  "nodes": [
+    {
+      "id": "theme_storefront",
+      "label": "Horizon Theme Storefront (DNK-e.com)",
+      "type": "frontend",
+      "authority": "display_only"
+    },
+    {
+      "id": "shopify_catalog_recommendations",
+      "label": "Shopify Search & Discovery API",
+      "type": "api",
+      "authority": "catalog_recommendations"
+    },
+    {
+      "id": "shopify_functions_discounts",
+      "label": "Shopify Functions (Discounts / Cart Transform)",
+      "type": "backend_engine",
+      "authority": "cart_pricing_authority"
+    },
+    {
+      "id": "nova_poshta_app_proxy",
+      "label": "Nova Poshta App Proxy / Carrier Service",
+      "type": "external_service",
+      "authority": "shipping_rates_and_warehouses"
+    },
+    {
+      "id": "shopify_checkout",
+      "label": "Shopify Checkout Sandbox",
+      "type": "checkout_engine",
+      "authority": "order_fulfillment_and_payment"
+    }
+  ],
+  "edges": [
+    {
+      "source": "theme_storefront",
+      "target": "shopify_catalog_recommendations",
+      "relationship": "fetches_anonymous_recommendations"
+    },
+    {
+      "source": "shopify_functions_discounts",
+      "target": "shopify_checkout",
+      "relationship": "applies_discounts_and_gifts"
+    },
+    {
+      "source": "nova_poshta_app_proxy",
+      "target": "shopify_checkout",
+      "relationship": "provides_authoritative_rates"
+    },
+    {
+      "source": "theme_storefront",
+      "target": "shopify_checkout",
+      "relationship": "redirects_for_order_completion"
+    }
+  ]
+}
